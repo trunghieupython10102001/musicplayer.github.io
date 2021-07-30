@@ -27,10 +27,11 @@ html {
 
 .title {
 	font-size: 16px;
-	color: #eb1e65;
+	color: #049fdc;
 	text-align: center;
 	margin-top: 12px;
 	margin-bottom: 4px;
+	font-weight: 600;
 }
 
 .dashboard__control > div {
@@ -71,7 +72,7 @@ html {
 
 .play {
 	font-size: 48px;
-	color: #eb1e65;
+	color: #049fdc;
 }
 
 .dashboard__timer {
@@ -84,7 +85,8 @@ html {
 
 .time {
 	height: 100%;
-	background-color: #eb1e65;
+	width: 0;
+	background-color: #049fdc;
 	border-radius: 4px;
 }
 
@@ -111,6 +113,8 @@ html {
 	padding: 12px 16px;
 	border-radius: 6px;
 	cursor: pointer;
+	box-shadow: 0 0 2px rgba(247, 132, 132, 0.4);
+
 }
 
 .playlist__item:last-child {
@@ -144,3 +148,11 @@ html {
 .item-more-info {
 	color: #888;
 }
+
+.clicked {
+	color: #049fdc;
+}
+
+.playing {
+	background-color: #c4e9fb;
+}	
