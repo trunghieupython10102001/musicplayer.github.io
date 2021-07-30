@@ -104,7 +104,7 @@ const app = {
 			img: "Hymn For The Weekend",
 			name: "Hymn For The Weekend",
 			artist: "Coldplay",
-			src: "Humn For The Weekend"
+			src: "Hymn For The Weekend"
 		},
 		{
 			img: "Just give me a reason",
