@@ -64,12 +64,7 @@ const app = {
 			artist: "Ed Sheeran",
 			src: "Shape of you"
 		},
-		{
-			img: "Shape of you",
-			name: "Shape of you",
-			artist: "Ed Sheeran",
-			src: "Shape of you"
-		},
+		
 	],
 	render() {
 		let htmls = this.songs.map(song => {
@@ -196,6 +191,7 @@ const app = {
 					app.playMusic()
 				}
 			}
+			this.displayPlayingSong()
 		}, 10)
 	},
 	nextSong() {
@@ -254,12 +250,16 @@ const app = {
 				app.currentIndex = i
 				app.loadCurrentSong()
 				app.playMusic()
-				for(let i = 0; i < songList.length; i++) {
-					songList[i].classList.remove('playing')
-				}
-				songList[i].classList.add('playing')
+				
+				app.displayPlayingSong()
 			}
 		}	
+	},
+	displayPlayingSong() {
+		for(let i = 0; i < songList.length; i++) {
+			songList[i].classList.remove('playing')
+		}
+		songList[this.currentIndex].classList.add('playing')
 	},
 	start() {
 		this.defineProperties()
