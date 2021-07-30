@@ -59,11 +59,228 @@ const app = {
 			src: "Despacito"
 		},
 		{
-			img: "Shape of you",
-			name: "Shape of you",
-			artist: "Ed Sheeran",
-			src: "Shape of you"
+			img: "Believer",
+			name: "Believer",
+			artist: "Imagine Dragon",
+			src: "Believer"
 		},
+		{
+			img: "Call me maybe",
+			name: "Call me maybe",
+			artist: "Carly Rae Jepsen",
+			src: "Call me maybe"
+		},
+		{
+			img: "Cheap Thrills",
+			name: "Cheap Thrills",
+			artist: "Sia",
+			src: "Cheap Thrills"
+		},
+		{
+			img: "Counting stars",
+			name: "Counting stars",
+			artist: "One Republic",
+			src: "Counting stars"
+		},
+		{
+			img: "Dance Monkey",
+			name: "Dance Monkey",
+			artist: "Tones and I",
+			src: "Dance Monkey"
+		},
+		{
+			img: "Happier",
+			name: "Happier",
+			artist: "Ed Sheeran",
+			src: "Happier"
+		},
+		{
+			img: "Havana",
+			name: "Havana",
+			artist: "Camila Cabello",
+			src: "Havana"
+		},
+		{
+			img: "Hymn For The Weekend",
+			name: "Hymn For The Weekend",
+			artist: "Coldplay",
+			src: "Humn For The Weekend"
+		},
+		{
+			img: "Just give me a reason",
+			name: "Just give me a reason",
+			artist: "Pink! ft. Nate Ruess",
+			src: "Just give me a reason"
+		},
+		{
+			img: "Just the way you are",
+			name: "Just the way you are",
+			artist: "Bruno Mars",
+			src: "Just the way you are"
+		},
+		{
+			img: "Lalala",
+			name: "Lalala",
+			artist: "Naughty Boy ft. Sam Smith",
+			src: "Lalala"
+		},
+		{
+			img: "Lemon tree",
+			name: "Lemon tree",
+			artist: "Fool's Garden",
+			src: "Lemon tree"
+		},
+		{
+			img: "Love is gone",
+			name: "Love is gone",
+			artist: "Slander",
+			src: "Love is gone"
+		},
+		{
+			img: "Love Yourself",
+			name: "Love Yourself",
+			artist: "Justin Bieber",
+			src: "Love Yourself"
+		},
+		{
+			img: "Maps",
+			name: "Maps",
+			artist: "Maroon 5",
+			src: "Maps"
+		},
+		{
+			img: "My Love",
+			name: "My Love",
+			artist: "Westlife",
+			src: "My Love"
+		},
+		{
+			img: "New Rules",
+			name: "New Rules",
+			artist: "Dua Lipa",
+			src: "New Rules"
+		},
+		{
+			img: "One more night",
+			name: "One more night",
+			artist: "Maroon 5",
+			src: "One more night"
+		},
+		{
+			img: "Photograph",
+			name: "Photograph",
+			artist: "Ed Sheeran",
+			src: "Photograph"
+		},
+		{
+			img: "Road",
+			name: "Road",
+			artist: "Katy Perry",
+			src: "Road"
+		},
+		{
+			img: "Rolling in the deep",
+			name: "Rolling in the deep",
+			artist: "Adele",
+			src: "Rolling in the deep"
+		},
+		{
+			img: "See you again",
+			name: "See you again",
+			artist: "Wiz Khalifa ft. Charlie Puth",
+			src: "See you again"
+		},
+		{
+			img: "Senorita",
+			name: "Senorita",
+			artist: "Camila Cabello ft. Shawn Mendes",
+			src: "Senorita"
+		},
+		{
+			img: "Set fire to the rain",
+			name: "Set fire to the rain",
+			artist: "Adele",
+			src: "Set fire to the rain"
+		},
+		{
+			img: "She will be loved",
+			name: "She will be loved",
+			artist: "Maroon 5",
+			src: "She will be loved"
+		},
+		{
+			img: "Someone like you",
+			name: "Someone like you",
+			artist: "Adele",
+			src: "Someone like you"
+		},
+		{
+			img: "Something just like this",
+			name: "Something just like this",
+			artist: "Coldplay ft. Chainsmokers",
+			src: "Something just like this"
+		},
+		{
+			img: "Sugar",
+			name: "Sugar",
+			artist: "Maroon 5",
+			src: "Sugar"
+		},
+		{
+			img: "Talking to the moon",
+			name: "Talking to the moon",
+			artist: "Bruno Mars",
+			src: "Talking to the moon"
+		},
+		{
+			img: "That girl",
+			name: "That girl",
+			artist: "Olly Murs",
+			src: "That girl"
+		},
+		{
+			img: "Titanium",
+			name: "Titanium",
+			artist: "David Guetta ft. Sia",
+			src: "Titanium"
+		},
+		{
+			img: "Treat you better",
+			name: "Treat you better",
+			artist: "Shawn Mendes",
+			src: "Treat you better"
+		},
+		{
+			img: "Uptown Funk",
+			name: "Uptown Funk",
+			artist: "Mark Ronson ft. Bruno Mars",
+			src: "Uptown Funk"
+		},
+		{
+			img: "Waitting for love",
+			name: "Waitting for love",
+			artist: "Avicii",
+			src: "Waitting for love"
+		},
+		{
+			img: "We Don't Talk Anymore",
+			name: "We Don't Talk Anymore",
+			artist: "Charlie Puth ft. Selena Gomez",
+			src: "We Don't Talk Anymore"
+		},
+		{
+			img: "What makes you beautiful",
+			name: "What makes you beautiful",
+			artist: "One Direction",
+			src: "What makes you beautiful"
+		},
+		{
+			img: "When I was your man",
+			name: "When I was your man",
+			artist: "Bruno Mars",
+			src: "When I was your man"
+		},
+		
 		
 	],
 	render() {
