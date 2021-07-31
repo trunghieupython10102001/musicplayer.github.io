@@ -275,12 +275,17 @@ const app = {
 			src: "What makes you beautiful"
 		},
 		{
-			img: "When I was your man",
-			name: "When I was your man",
-			artist: "Bruno Mars",
-			src: "When I was your man"
+			img: "when i was your man",
+			name: "when i was your man",
+			artist: "bruno mars",
+			src: "when i was your man"
 		},
-		
+		{
+			img: "La lung",
+			name: "Lạ lùng",
+			artist: "Vũ",
+			src: "La lung"
+		},
 		
 	],
 	render() {
