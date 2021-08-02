@@ -286,6 +286,162 @@ const app = {
 			artist: "Vũ",
 			src: "La lung"
 		},
+		{
+			img: "1 phut",
+			name: "1 phút",
+			artist: "Andiez",
+			src: "1 phut"
+		},
+		{
+			img: "Ai la nguoi thuong em",
+			name: "Ai là người thương em",
+			artist: "Anh Quân AP",
+			src: "Ai la nguoi thuong em"
+		},
+		{
+			img: "Ai mang co don di",
+			name: "Ai mang cô đơn đi",
+			artist: "K-ICM ft. APJ",
+			src: "Ai mang co don di"
+		},
+		{
+			img: "Bac phan",
+			name: "Bạc phận",
+			artist: "Jack ft. K-ICM",
+			src: "Bac phan"
+		},
+		{
+			img: "Bai nay chill phet",
+			name: "Bài này chill phết",
+			artist: "Đen vâu ft. Min",
+			src: "Bai nay chill phet"
+		},
+		{
+			img: "Banh mi khong",
+			name: "Bánh mì không",
+			artist: "Đạt G ft. Du Uyên",
+			src: "Banh mi khong"
+		},
+		{
+			img: "Bong hoa dep nhat",
+			name: "Bông hoa đẹp nhất",
+			artist: "Anh Quân AP",
+			src: "Bong hoa dep nhat"
+		},
+		{
+			img: "Buon lam chi em oi",
+			name: "Buồn làm chi em ơi",
+			artist: "Hoài Lâm",
+			src: "Buon lam chi em oi"
+		},
+		{
+			img: "Chieu hom ay",
+			name: "Chiều hôm ấy",
+			artist: "Jaykii",
+			src: "Chieu hom ay"
+		},
+		{
+			img: "Da lo yeu em nhieu",
+			name: "Đã lỡ yêu em nhiều",
+			artist: "Justa Tee",
+			src: "Da lo yeu em nhieu"
+		},
+		{
+			img: "Dua nhau di tron",
+			name: "Đưa nhau đi trốn",
+			artist: "Đen Vâu ft. Linh Cáo",
+			src: "Dua nhau di tron"
+		},
+		{
+			img: "Hai trieu nam",
+			name: "Hai triệu năm",
+			artist: "Đen Vâu ft. Biên",
+			src: "Hai trieu nam"
+		},
+		{
+			img: "Het thuong can nho",
+			name: "Hết thương cạn nhớ",
+			artist: "Đức Phúc",
+			src: "Het thuong can nho"
+		},
+		{
+			img: "Hoa hai duong",
+			name: "Hoa hải đường",
+			artist: "Jack",
+			src: "Hoa hai duong"
+		},
+		{
+			img: "Hoa no khong mau",
+			name: "Hoa nở không màu",
+			artist: "Hoài Lâm",
+			src: "Hoa no khong mau"
+		},
+		{
+			img: "HongKong1",
+			name: "HongKong1",
+			artist: "Nguyễn Trọng Tài x San Ji x Double X",
+			src: "HongKong1"
+		},
+		{
+			img: "Loving sunny",
+			name: "Loving sunny",
+			artist: "Kimmese ft. Đen Vâu",
+			src: "Loving sunny"
+		},
+		{
+			img: "Mot buoc yeu van dam dau",
+			name: "Một bước yêu vạn dặm đau",
+			artist: "Mr. Siro",
+			src: "Mot buoc yeu van dam dau"
+		},
+		{
+			img: "Mot dem say",
+			name: "Một đêm sạy",
+			artist: "Thịnh Suy",
+			src: "Mot dem say"
+		},
+		{
+			img: "Muon ruou to tinh",
+			name: "Mượn rượu tỏ tình",
+			artist: "Big Daddy ft. Emily",
+			src: "Muon ruou to tinh"
+		},
+		{
+			img: "Nam lay tay anh",
+			name: "Nắm lấy tay anh",
+			artist: "Tuấn Hưng",
+			src: "Nam lay tay anh"
+		},
+		{
+			img: "Nang tho",
+			name: "Nàng thơ",
+			artist: "Đình Dũng",
+			src: "Nang tho"
+		},
+		{
+			img: "Ngam hoa le roi",
+			name: "Ngắm hoa lệ rơi",
+			artist: "Châu Khải Phong",
+			src: "Ngam hoa le roi"
+		},
+		{
+			img: "Song gio",
+			name: "Sóng gió",
+			artist: "Jack ft. K-ICM",
+			src: "Song gio"
+		},
+		{
+			img: "Thang dien",
+			name: "Thằng điên",
+			artist: "Justa Tee ft. Phương Ly",
+			src: "Thang dien"
+		},
+		{
+			img: "Thay toi yeu co ay",
+			name: "Thay tôi yêu cô ấy",
+			artist: "Thanh Hưng",
+			src: "Thay toi yeu co ay"
+		},
 		
 	],
 	render() {
