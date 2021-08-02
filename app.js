@@ -425,6 +425,24 @@ const app = {
 			src: "Ngam hoa le roi"
 		},
 		{
+			img: "Ngay mai em di",
+			name: "Ngày mai em đi",
+			artist: "Lê Hiếu ft. Soobin Hoàng Sơn",
+			src: "Ngay mai em di"
+		},
+		{
+			img: "Nguoi la oi",
+			name: "Người lạ ơi",
+			artist: "Orange ft. Karik",
+			src: "Nguoi la oi"
+		},
+		{
+			img: "Sai nguoi sai thoi diem",
+			name: "Sai người sai thời điểm",
+			artist: "Thanh Hưng",
+			src: "Sai nguoi sai thoi diem"
+		},
+		{
 			img: "Song gio",
 			name: "Sóng gió",
 			artist: "Jack ft. K-ICM",
@@ -441,6 +459,24 @@ const app = {
 			name: "Thay tôi yêu cô ấy",
 			artist: "Thanh Hưng",
 			src: "Thay toi yeu co ay"
+		},
+		{
+			img: "Thi thoi",
+			name: "Thì thôi",
+			artist: "Reddy",
+			src: "Thi thoi"
+		},
+		{
+			img: "Tron tim",
+			name: "Trốn tìm",
+			artist: "Đen Vâu ft. MTV band",
+			src: "Tron tim"
+		},
+		{
+			img: "Vo cung",
+			name: "Vô cùng",
+			artist: "Phan Duy Anh",
+			src: "Vo cung"
 		},
 		
 	],
