@@ -467,6 +467,12 @@ const app = {
 			src: "Thi thoi"
 		},
 		{
+			img: "Tinh dang nhu ly ca phe",
+			name: "Tình đắng như ly cà phê",
+			artist: "nân. x Ngơ",
+			src: "Tinh dang nhu ly ca phe"
+		},
+		{
 			img: "Tron tim",
 			name: "Trốn tìm",
 			artist: "Đen Vâu ft. MTV band",
@@ -478,7 +484,6 @@ const app = {
 			artist: "Phan Duy Anh",
 			src: "Vo cung"
 		},
-		
 	],
 	render() {
 		let htmls = this.songs.map(song => {
