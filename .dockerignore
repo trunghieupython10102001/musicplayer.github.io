@@ -1,0 +1,31 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+README.md
+MVP_PLAN.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Node modules (if using any build tools)
+node_modules/
+npm-debug.log
+
+# Temporary files
+tmp/
+temp/
+

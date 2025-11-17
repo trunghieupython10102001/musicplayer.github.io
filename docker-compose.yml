@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # Nginx Web Server
+  nginx:
+    image: nginx:alpine
+    container_name: musicplayer_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./public:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./uploads:/var/www/html/uploads
+    depends_on:
+      - php
+    networks:
+      - musicplayer_network
+    restart: unless-stopped
+
+  # PHP-FPM
+  php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: musicplayer_php
+    volumes:
+      - ./public:/var/www/html
+      - ./includes:/var/www/includes
+      - ./uploads:/var/www/html/uploads
+    depends_on:
+      - mysql
+    networks:
+      - musicplayer_network
+    restart: unless-stopped
+    environment:
+      - DB_HOST=mysql
+      - DB_NAME=musicplayer
+      - DB_USER=musicplayer_user
+      - DB_PASS=musicplayer_pass
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: musicplayer_mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: musicplayer
+      MYSQL_USER: musicplayer_user
+      MYSQL_PASSWORD: musicplayer_pass
+    networks:
+      - musicplayer_network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+  # phpMyAdmin for Database Management
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: musicplayer_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root_password
+      UPLOAD_LIMIT: 100M
+    depends_on:
+      - mysql
+    networks:
+      - musicplayer_network
+    restart: unless-stopped
+
+networks:
+  musicplayer_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+

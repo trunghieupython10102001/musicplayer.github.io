@@ -1,0 +1,30 @@
+# Docker volumes
+mysql_data/
+
+# Uploads directory
+uploads/songs/*
+uploads/covers/*
+!uploads/songs/.gitkeep
+!uploads/covers/.gitkeep
+
+# PHP
+vendor/
+composer.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+
