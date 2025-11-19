@@ -52,7 +52,11 @@ if (loginUser($user)) {
     // Log activity
     logActivity("User logged in: {$user['username']}");
     
+    // Generate JWT
+    $token = generateAuthToken($user);
+    
     jsonResponse(true, 'Login successful', [
+        'token' => $token,
         'user_id' => $user['id'],
         'username' => $user['username'],
         'email' => $user['email'],

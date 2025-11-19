@@ -151,6 +151,11 @@ $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : '/index.php';
                 const data = await response.json();
                 
                 if (data.success) {
+                    // Save token
+                    if (data.data.token) {
+                        localStorage.setItem('authToken', data.data.token);
+                    }
+
                     showAlert('Login successful! Redirecting...', 'success');
                     
                     // Redirect after short delay

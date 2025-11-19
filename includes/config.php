@@ -42,6 +42,8 @@ define('UPLOAD_URL', BASE_URL . '/uploads');
 // Security settings
 define('PASSWORD_MIN_LENGTH', 6);
 define('SESSION_LIFETIME', 3600 * 24); // 24 hours in seconds
+define('JWT_SECRET', getenv('JWT_SECRET') ?: 'musicplayer_jwt_secret_key_change_this_in_production');
+define('JWT_EXPIRY', 3600 * 24 * 7); // 7 days
 
 // File upload settings
 define('MAX_FILE_SIZE', 100 * 1024 * 1024); // 100MB in bytes

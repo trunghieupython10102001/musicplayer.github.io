@@ -16,18 +16,36 @@ const API = {
      */
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
+        const token = localStorage.getItem('authToken');
         
         const defaultOptions = {
             headers: {
                 'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
             },
             credentials: 'include' // Include cookies for session
         };
         
         const config = { ...defaultOptions, ...options };
         
+        // Merge headers if provided in options
+        if (options.headers) {
+            config.headers = { ...defaultOptions.headers, ...options.headers };
+        }
+        
         try {
             const response = await fetch(url, config);
+            
+            // Handle 401 Unauthorized
+            if (response.status === 401) {
+                // If we are not on the login page, and it's not a login attempt
+                if (!window.location.pathname.includes('login.php') && !endpoint.includes('login.php')) {
+                    localStorage.removeItem('authToken');
+                    // Optional: Redirect to login?
+                    // window.location.href = '/login.php';
+                }
+            }
+            
             const data = await response.json();
             
             return {
@@ -75,6 +93,7 @@ const API = {
      * Logout user
      */
     async logout() {
+        localStorage.removeItem('authToken');
         return await this.request('/auth/logout.php', {
             method: 'POST'
         });
@@ -260,11 +279,14 @@ const API = {
      * Upload new song (admin only)
      */
     async uploadSong(formData) {
-        // Don't set Content-Type header for FormData
+        // Don't set Content-Type header for FormData, fetch will set it with boundary
+        const token = localStorage.getItem('authToken');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
         return await this.request('/admin/upload.php', {
             method: 'POST',
             body: formData,
-            headers: {} // Override default JSON header
+            headers: headers // Use headers with auth token but no content-type
         });
     }
 };
@@ -316,4 +338,3 @@ function showNotification(message, type = 'info') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { API, showNotification };
 }
-

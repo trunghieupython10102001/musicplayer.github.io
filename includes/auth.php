@@ -2,18 +2,96 @@
 /**
  * Authentication Helper Functions
  * 
- * Provides user authentication and session management
+ * Provides user authentication and session management (supporting both Session and JWT)
  */
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/database.php';
+require_once __DIR__ . '/jwt.php';
+
+/**
+ * Generate JWT for user
+ * 
+ * @param array $user User data
+ * @return string JWT token
+ */
+function generateAuthToken($user) {
+    $payload = [
+        'sub' => $user['id'],
+        'name' => $user['username'],
+        'role' => $user['role'],
+        'iat' => time(),
+        'exp' => time() + JWT_EXPIRY
+    ];
+    
+    return JWT::encode($payload, JWT_SECRET);
+}
+
+/**
+ * Get JWT from Authorization header
+ * 
+ * @return string|null Token or null
+ */
+function getAuthTokenFromHeader() {
+    $headers = null;
+    if (isset($_SERVER['Authorization'])) {
+        $headers = trim($_SERVER['Authorization']);
+    } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) { // Nginx or fast CGI
+        $headers = trim($_SERVER['HTTP_AUTHORIZATION']);
+    } elseif (function_exists('apache_request_headers')) {
+        $requestHeaders = apache_request_headers();
+        $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
+        if (isset($requestHeaders['Authorization'])) {
+            $headers = trim($requestHeaders['Authorization']);
+        }
+    }
+    
+    if (!empty($headers)) {
+        if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+            return $matches[1];
+        }
+    }
+    
+    return null;
+}
+
+/**
+ * Validate JWT token
+ * 
+ * @param string $token
+ * @return array|null Payload or null
+ */
+function validateAuthToken($token) {
+    try {
+        $payload = JWT::decode($token, JWT_SECRET);
+        
+        if (!$payload || !isset($payload['exp']) || $payload['exp'] < time()) {
+            return null;
+        }
+        
+        return $payload;
+    } catch (Exception $e) {
+        return null;
+    }
+}
 
 /**
  * Check if user is logged in
+ * Prioritizes JWT, falls back to Session
  * 
  * @return bool True if logged in, false otherwise
  */
 function isLoggedIn() {
+    // Check JWT first
+    $token = getAuthTokenFromHeader();
+    if ($token) {
+        $payload = validateAuthToken($token);
+        if ($payload) {
+            return true;
+        }
+    }
+    
+    // Fallback to Session
     return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 }
 
@@ -23,7 +101,21 @@ function isLoggedIn() {
  * @return bool True if admin, false otherwise
  */
 function isAdmin() {
-    return isLoggedIn() && isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
+    if (!isLoggedIn()) {
+        return false;
+    }
+    
+    // Check JWT
+    $token = getAuthTokenFromHeader();
+    if ($token) {
+        $payload = validateAuthToken($token);
+        if ($payload && isset($payload['role']) && $payload['role'] === 'admin') {
+            return true;
+        }
+    }
+    
+    // Check Session
+    return isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
 }
 
 /**
@@ -32,7 +124,17 @@ function isAdmin() {
  * @return int|null User ID or null if not logged in
  */
 function getCurrentUserId() {
-    return isLoggedIn() ? $_SESSION['user_id'] : null;
+    // Check JWT
+    $token = getAuthTokenFromHeader();
+    if ($token) {
+        $payload = validateAuthToken($token);
+        if ($payload && isset($payload['sub'])) {
+            return $payload['sub'];
+        }
+    }
+    
+    // Check Session
+    return isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 }
 
 /**
@@ -41,14 +143,16 @@ function getCurrentUserId() {
  * @return array|null User data or null if not logged in
  */
 function getCurrentUser() {
-    if (!isLoggedIn()) {
+    $userId = getCurrentUserId();
+    
+    if (!$userId) {
         return null;
     }
     
     $db = Database::getInstance();
     $query = "SELECT id, username, email, role, profile_picture, created_at 
               FROM users WHERE id = ?";
-    return $db->selectOne($query, [$_SESSION['user_id']]);
+    return $db->selectOne($query, [$userId]);
 }
 
 /**
@@ -229,4 +333,3 @@ function generateCSRFToken() {
 function verifyCSRFToken($token) {
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
-
