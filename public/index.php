@@ -22,6 +22,7 @@ $user = getCurrentUser();
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Music Player - <?php echo htmlspecialchars($user['username']); ?></title>
 	<link rel="stylesheet" href="./assets/css/style.css">
+	<link rel="stylesheet" href="./assets/css/queue.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 	<link rel="icon" sizes="32x32" type="image/png" href="./assets/favicon/spotify.png">
 	<style>
@@ -172,6 +173,7 @@ $user = getCurrentUser();
 		.btn-create-playlist {
 			width: 100%;
 			padding: 10px 16px;
+			margin-top: 12px;
 			background: transparent;
 			border: 2px dashed #404040;
 			color: #b3b3b3;
@@ -506,6 +508,10 @@ $user = getCurrentUser();
 			opacity: 1;
 		}
 
+		.song-list-item:hover .btn-favorite {
+			opacity: 1;
+		}
+
 		.btn-favorite.active {
 			color: #ff4757;
 			opacity: 1;
@@ -823,6 +829,9 @@ $user = getCurrentUser();
 					<input type="text" id="searchInput" class="search-input" placeholder="Search for songs or artists...">
 				</div>
 				<div class="top-bar-actions">
+					<button class="btn-logout" id="queueBtn" onclick="toggleQueue()" title="Queue">
+						<i class="fas fa-list-ol"></i>
+					</button>
 					<button class="btn-logout" onclick="logout()">
 						<i class="fas fa-sign-out-alt"></i> Logout
 					</button>
@@ -904,6 +913,16 @@ $user = getCurrentUser();
 				</div>
 			</div>
 		</main>
+
+		<!-- Queue Sidebar -->
+		<aside class="queue-sidebar" id="queueSidebar">
+			<div class="sidebar-header">
+				<h1 style="font-size: 20px;">Play Queue</h1>
+			</div>
+			<div class="queue-list" id="queueList">
+				<!-- Queue items will be injected here -->
+			</div>
+		</aside>
 	</div>
 
 	<!-- Audio Element -->

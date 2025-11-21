@@ -13,7 +13,9 @@ const player = {
     isPlaying: false,
     isShuffled: false,
     isRepeating: false,
-    currentView: 'player'
+    currentView: 'player',
+    activePlaylistId: null,
+    isQueueOpen: false
 };
 
 // DOM Elements
@@ -29,6 +31,8 @@ const nowPlayingTitle = document.getElementById('nowPlayingTitle');
 const nowPlayingArtist = document.getElementById('nowPlayingArtist');
 const nowPlayingArtwork = document.getElementById('nowPlayingArtwork');
 const searchInput = document.getElementById('searchInput');
+const queueSidebar = document.getElementById('queueSidebar');
+const queueList = document.getElementById('queueList');
 
 // Initialize
 async function init() {
@@ -67,6 +71,7 @@ async function loadSongs() {
             
             console.log(`Loaded ${player.songs.length} songs`);
             document.getElementById('libraryCount').textContent = `${player.songs.length} songs in your library`;
+            renderQueue();
         }
     } catch (error) {
         console.error('Error loading songs:', error);
@@ -122,11 +127,13 @@ function setupEventListeners() {
         player.isPlaying = true;
         updatePlayButton();
         nowPlayingArtwork.classList.add('rotating');
+        renderQueue(); // Update playing state in queue
     };
     audioPlayer.onpause = () => {
         player.isPlaying = false;
         updatePlayButton();
         nowPlayingArtwork.classList.remove('rotating');
+        renderQueue(); // Update playing state in queue
     };
     
     // Search
@@ -154,6 +161,7 @@ function setupEventListeners() {
                         audio: song.audio_url
                     }));
                     renderCurrentView();
+                    renderQueue();
                 }
             } catch (error) {
                 console.error('Search error:', error);
@@ -180,6 +188,8 @@ function playSong(index) {
     
     // Log play to backend
     API.logPlay(song.id);
+    
+    renderQueue();
 }
 
 // Toggle play/pause
@@ -217,10 +227,20 @@ function toggleShuffle() {
     shuffleBtn.style.color = player.isShuffled ? '#32e84a' : '';
     
     if (player.isShuffled) {
+        // Simple shuffle: sort by random
+        // Ideally we should keep the current song and shuffle the rest
+        const currentSong = player.songs[player.currentIndex];
+        player.songs.sort(() => Math.random() - 0.5);
+        // Find new index of current song
+        player.currentIndex = player.songs.indexOf(currentSong);
+        
         showNotification('Shuffle on', 'success');
     } else {
+        // Re-sort by ID or original order (complex if we don't store original index)
+        // For now, just notify
         showNotification('Shuffle off', 'info');
     }
+    renderQueue();
 }
 
 // Toggle repeat
@@ -288,15 +308,17 @@ async function toggleFavorite(songId) {
     }
 }
 
-// Switch view
-function switchView(view) {
-    player.currentView = view;
-    
+// Update UI for view switch
+function updateNavUI(view) {
     // Update nav buttons
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.classList.remove('active');
+        // Check if this button corresponds to the view
+        const onclick = btn.getAttribute('onclick');
+        if (onclick && onclick.includes(`'${view}'`)) {
+            btn.classList.add('active');
+        }
     });
-    event.target.classList.add('active');
     
     // Hide all views
     document.querySelectorAll('.view-section').forEach(section => {
@@ -311,7 +333,28 @@ function switchView(view) {
         'playlists': 'playlistsView'
     };
     
-    document.getElementById(viewMap[view]).classList.add('active');
+    const viewId = viewMap[view];
+    if (viewId) {
+        document.getElementById(viewId).classList.add('active');
+    }
+}
+
+// Switch view
+function switchView(view) {
+    if (view === 'playlists') {
+        player.activePlaylistId = null;
+    }
+    
+    player.currentView = view;
+    updateNavUI(view);
+    renderCurrentView();
+}
+
+// Open playlist details
+async function openPlaylistDetails(id) {
+    player.activePlaylistId = id;
+    player.currentView = 'playlists';
+    updateNavUI('playlists');
     renderCurrentView();
 }
 
@@ -328,7 +371,11 @@ function renderCurrentView() {
             renderFavorites();
             break;
         case 'playlists':
-            renderPlaylistsView();
+            if (player.activePlaylistId) {
+                renderPlaylistDetails(player.activePlaylistId);
+            } else {
+                renderPlaylistsView();
+            }
             break;
     }
 }
@@ -384,6 +431,10 @@ function renderLibrary() {
                         onclick="event.stopPropagation(); toggleFavorite(${song.id})">
                     <i class="fas fa-heart"></i>
                 </button>
+                <button class="btn-favorite" 
+                        onclick="event.stopPropagation(); showAddToPlaylistModal(${JSON.stringify(song).replace(/"/g, '&quot;')})">
+                    <i class="fas fa-plus"></i>
+                </button>
             </div>
         </div>
     `).join('');
@@ -416,9 +467,13 @@ function renderFavorites() {
                 </button>
             </div>
             <div class="song-card-actions">
-                <button class="btn-favorite active" 
-                        onclick="event.stopPropagation(); toggleFavorite(${song.id})">
-                    <i class="fas fa-heart"></i>
+                <button class="btn-favorite" 
+                        onclick="event.stopPropagation(); toggleFavorite(${song.id})" title="Remove from favorites">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button class="btn-favorite" 
+                        onclick="event.stopPropagation(); showAddToPlaylistModal(${JSON.stringify(song).replace(/"/g, '&quot;')})">
+                    <i class="fas fa-plus"></i>
                 </button>
             </div>
             <h3 class="song-card-title">${song.title}</h3>
@@ -445,15 +500,15 @@ function renderPlaylistsView() {
     }
     
     const html = player.playlists.map(playlist => `
-        <div class="stat-card" style="position: relative;">
+        <div class="stat-card" style="position: relative; cursor: pointer;" onclick="openPlaylistDetails(${playlist.id})">
             <h3>${playlist.name}</h3>
             <p class="stat-card-number">${playlist.song_count}</p>
             <p style="color: #b3b3b3; font-size: 13px; margin: 8px 0 0 0;">songs</p>
             <div style="display: flex; gap: 8px; margin-top: 12px;">
-                <button class="btn-modal btn-modal-secondary" style="flex: 1; padding: 8px;" onclick="showEditPlaylistModal(${JSON.stringify(playlist).replace(/"/g, '&quot;')})">
+                <button class="btn-modal btn-modal-secondary" style="flex: 1; padding: 8px;" onclick="event.stopPropagation(); showEditPlaylistModal(${JSON.stringify(playlist).replace(/"/g, '&quot;')})">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn-modal btn-modal-secondary" style="flex: 1; padding: 8px;" onclick="deletePlaylist(${playlist.id})">
+                <button class="btn-modal btn-modal-secondary" style="flex: 1; padding: 8px;" onclick="event.stopPropagation(); deletePlaylist(${playlist.id})">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
@@ -461,6 +516,136 @@ function renderPlaylistsView() {
     `).join('');
     
     container.innerHTML = html;
+}
+
+// Render playlist details
+async function renderPlaylistDetails(playlistId) {
+    const container = document.getElementById('playlistsGrid'); // We reuse this container
+    
+    container.innerHTML = '<div style="grid-column: 1 / -1; color: #b3b3b3; padding: 20px;">Loading playlist...</div>';
+    
+    try {
+        const response = await API.getPlaylist(playlistId);
+        
+        if (!response.success) {
+            container.innerHTML = `<div style="grid-column: 1 / -1; color: #dc3545;">Failed to load playlist: ${response.message}</div>`;
+            return;
+        }
+        
+        const playlist = response.data.playlist;
+        const songs = response.data.songs;
+        
+        let html = `
+            <div class="playlist-header" style="grid-column: 1 / -1; margin-bottom: 24px;">
+                <button onclick="switchView('playlists')" style="background: transparent; border: none; color: #b3b3b3; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding: 0;">
+                    <i class="fas fa-arrow-left"></i> Back to Playlists
+                </button>
+                
+                <div style="display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap;">
+                    <div style="width: 180px; height: 180px; background: #282828; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 64px; color: #404040; flex-shrink: 0;">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <h4 style="color: #fff; margin: 0; font-size: 12px; font-weight: 700; text-transform: uppercase;">Playlist</h4>
+                        <h1 style="color: #fff; font-size: 48px; font-weight: 900; margin: 8px 0 16px 0; line-height: 1.1;">${playlist.name}</h1>
+                        <p style="color: #b3b3b3; margin: 0 0 8px 0;">${playlist.description || ''}</p>
+                        <div style="color: #b3b3b3; font-size: 14px;">
+                            ${playlist.song_count} songs • Created ${new Date(playlist.created_at).toLocaleDateString()}
+                        </div>
+                        <div style="margin-top: 16px; display: flex; gap: 12px;">
+                             <button class="btn-modal btn-modal-secondary" onclick="showEditPlaylistModal(${JSON.stringify(playlist).replace(/"/g, '&quot;')})">
+                                <i class="fas fa-edit"></i> Edit Playlist
+                            </button>
+                            <button class="btn-modal btn-modal-secondary" onclick="deletePlaylist(${playlist.id})">
+                                <i class="fas fa-trash"></i> Delete Playlist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="songs-list" style="grid-column: 1 / -1;">
+        `;
+        
+        if (songs.length === 0) {
+            html += `
+                <div class="empty-state">
+                    <i class="fas fa-music"></i>
+                    <h3>Playlist is empty</h3>
+                    <p>Add songs from your library</p>
+                    <button class="btn-modal btn-modal-primary" style="margin-top: 16px;" onclick="switchView('library')">Go to Library</button>
+                </div>
+            `;
+        } else {
+            html += songs.map((song, index) => `
+                <div class="song-list-item" onclick="playPlaylistSong(${index}, ${playlistId})">
+                    <div class="song-list-number">${index + 1}</div>
+                    <div class="song-list-img">
+                        <img src="${song.cover_url}" alt="${song.title}">
+                    </div>
+                    <div class="song-list-info">
+                        <h4 class="song-list-title">${song.title}</h4>
+                        <p class="song-list-artist">${song.artist}</p>
+                    </div>
+                    <div class="song-list-actions">
+                        <button class="btn-favorite" onclick="event.stopPropagation(); removeFromPlaylist(${playlistId}, ${song.id})" title="Remove from playlist">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        html += '</div>';
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading playlist details:', error);
+        container.innerHTML = '<div style="grid-column: 1 / -1; color: #dc3545;">An error occurred while loading the playlist.</div>';
+    }
+}
+
+// Play song from playlist context
+async function playPlaylistSong(index, playlistId) {
+    try {
+        const response = await API.getPlaylist(playlistId);
+        if (response.success) {
+            player.songs = response.data.songs.map(song => ({
+                id: song.id,
+                title: song.title,
+                artist: song.artist,
+                cover: song.cover_url,
+                audio: song.audio_url,
+                playCount: 0
+            }));
+            
+            playSong(index);
+            renderQueue();
+        }
+    } catch (error) {
+        console.error('Error playing playlist song:', error);
+    }
+}
+
+// Remove song from playlist
+async function removeFromPlaylist(playlistId, songId) {
+    if (!confirm('Remove this song from the playlist?')) return;
+    
+    try {
+        const response = await API.removeSongFromPlaylist(playlistId, songId);
+        if (response.success) {
+            showNotification('Song removed from playlist', 'success');
+            // Refresh view
+            renderPlaylistDetails(playlistId);
+            // Also update sidebar count if possible (requires reloading all playlists)
+            loadPlaylists();
+        } else {
+            showNotification(response.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error removing song:', error);
+        showNotification('Failed to remove song', 'error');
+    }
 }
 
 // Render sidebar playlists
@@ -473,7 +658,7 @@ function renderSidebarPlaylists() {
     }
     
     const html = player.playlists.map(playlist => `
-        <div class="playlist-item">
+        <div class="playlist-item" onclick="openPlaylistDetails(${playlist.id})">
             <i class="fas fa-music"></i>
             ${playlist.name}
         </div>
@@ -755,12 +940,192 @@ async function updatePlaylist(playlistId) {
     }
 }
 
+// Delete playlist
+async function deletePlaylist(playlistId) {
+    if (!confirm('Are you sure you want to delete this playlist? This cannot be undone.')) return;
+    
+    try {
+        const response = await API.deletePlaylist(playlistId);
+        if (response.success) {
+            showNotification('Playlist deleted', 'success');
+            
+            // If we were viewing this playlist, switch back to list
+            if (player.activePlaylistId === playlistId) {
+                switchView('playlists');
+            }
+            
+            await loadPlaylists();
+        } else {
+            showNotification(response.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting playlist:', error);
+        showNotification('Failed to delete playlist', 'error');
+    }
+}
+
+// Toggle Queue
+function toggleQueue() {
+    player.isQueueOpen = !player.isQueueOpen;
+    
+    if (player.isQueueOpen) {
+        queueSidebar.classList.add('active');
+        renderQueue();
+    } else {
+        queueSidebar.classList.remove('active');
+    }
+}
+
+// Render Queue
+function renderQueue() {
+    if (!player.isQueueOpen) return;
+    
+    if (player.songs.length === 0) {
+        queueList.innerHTML = '<div class="queue-empty">Queue is empty</div>';
+        return;
+    }
+    
+    let html = '';
+    
+    // History Section
+    if (player.currentIndex > 0) {
+        html += '<div class="queue-section-title">History</div>';
+        for (let i = 0; i < player.currentIndex; i++) {
+            const song = player.songs[i];
+            html += renderQueueItem(song, i, 'history');
+        }
+    }
+    
+    // Playing Next Section
+    html += '<div class="queue-section-title">Playing Next</div>';
+    for (let i = player.currentIndex; i < player.songs.length; i++) {
+        const song = player.songs[i];
+        const isPlaying = i === player.currentIndex ? 'playing' : '';
+        html += renderQueueItem(song, i, isPlaying);
+    }
+    
+    queueList.innerHTML = html;
+    
+    // Setup drag events after rendering
+    setupQueueDragEvents();
+}
+
+function renderQueueItem(song, index, extraClass = '') {
+    return `
+        <div class="queue-item ${extraClass}" 
+             draggable="true"
+             data-index="${index}">
+            <div class="queue-item-handle">
+                <i class="fas fa-grip-lines"></i>
+            </div>
+            <div class="queue-item-info" onclick="playSong(${index})">
+                <div class="queue-item-title">${song.title}</div>
+                <div class="queue-item-artist">${song.artist}</div>
+            </div>
+            <button class="queue-item-remove" onclick="removeFromQueue(event, ${index})">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+}
+
+// Remove from queue
+function removeFromQueue(event, index) {
+    event.stopPropagation();
+    
+    // Remove from array
+    player.songs.splice(index, 1);
+    
+    // Adjust current index
+    if (index < player.currentIndex) {
+        player.currentIndex--;
+    } else if (index === player.currentIndex) {
+        // If removed current song, play next (now at same index) or stop if empty
+        if (player.songs.length === 0) {
+            audioPlayer.pause();
+            audioPlayer.src = '';
+        } else {
+             if (player.currentIndex >= player.songs.length) {
+                player.currentIndex = 0;
+             }
+             playSong(player.currentIndex);
+        }
+    }
+    
+    renderQueue();
+}
+
+// Drag and Drop variables
+let draggedItemIndex = null;
+
+function setupQueueDragEvents() {
+    const items = document.querySelectorAll('.queue-item');
+    
+    items.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragenter', handleDragEnter);
+        item.addEventListener('dragleave', handleDragLeave);
+    });
+}
+
+function handleDragStart(e) {
+    draggedItemIndex = parseInt(this.getAttribute('data-index'));
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+    e.preventDefault(); // Necessary for drop to fire
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    this.classList.add('over');
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('over');
+}
+
+function handleDrop(e) {
+    e.stopPropagation(); // Stops some browsers from redirecting.
+    
+    if (draggedItemIndex === null) return;
+    
+    const targetIndex = parseInt(this.getAttribute('data-index'));
+    
+    if (draggedItemIndex !== targetIndex) {
+        // Move item in array
+        const item = player.songs.splice(draggedItemIndex, 1)[0];
+        player.songs.splice(targetIndex, 0, item);
+        
+        // Update current index if needed
+        if (player.currentIndex === draggedItemIndex) {
+            player.currentIndex = targetIndex;
+        } else if (player.currentIndex > draggedItemIndex && player.currentIndex <= targetIndex) {
+            player.currentIndex--;
+        } else if (player.currentIndex < draggedItemIndex && player.currentIndex >= targetIndex) {
+            player.currentIndex++;
+        }
+        
+        renderQueue();
+    }
+    
+    return false;
+}
+
 // Close modal on outside click
 window.onclick = function(event) {
     const modal = document.getElementById('createPlaylistModal');
     if (event.target === modal) {
         closeCreatePlaylistModal();
     }
+    
+    // Close queue if clicked outside (optional, but maybe annoying if user wants to interact with main content while queue is open)
+    // Let's keep it toggle-only for now as per request "side bar"
 };
 
 // Check if user is admin (set on page load from PHP)
@@ -768,4 +1133,3 @@ window.isAdmin = false;
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', init);
-
