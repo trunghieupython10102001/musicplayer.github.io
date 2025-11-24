@@ -9,13 +9,15 @@ const player = {
     currentIndex: 0,
     songs: [],
     playlists: [],
+    albums: [],
     favorites: new Set(),
     isPlaying: false,
     isShuffled: false,
     isRepeating: false,
     currentView: 'player',
     activePlaylistId: null,
-    isQueueOpen: false
+    isQueueOpen: false,
+    queue: [],
 };
 
 // DOM Elements
@@ -47,6 +49,7 @@ async function init() {
     await loadSongs();
     await loadFavorites();
     await loadPlaylists();
+    await loadAlbums();
 
     // Setup event listeners
     setupEventListeners();
@@ -105,6 +108,21 @@ async function loadPlaylists() {
         }
     } catch (error) {
         console.error('Error loading playlists:', error);
+    }
+}
+
+// Load albums
+async function loadAlbums() {
+    try {
+        const response = await API.getAlbums();
+        if (response.success) {
+            player.albums = response.data.albums;
+            // You can add a count display if you have a place for it in the UI
+            // document.getElementById('albumsCount').textContent = `${player.albums.length} albums`;
+            renderAlbumsView();
+        }
+    } catch (error) {
+        console.error('Error loading albums:', error);
     }
 }
 
@@ -171,11 +189,17 @@ function setupEventListeners() {
 }
 
 // Play song by index
-function playSong(index) {
-    if (index < 0 || index >= player.songs.length) return;
+function playSong(index, isFromQueue = false) {
+    if (!isFromQueue && player.queue.length > 0) {
+        player.queue = [];
+        showNotification('Playlist queue cleared', 'info');
+    }
+    const songSource = isFromQueue ? player.queue : player.songs;
+
+    if (index < 0 || index >= songSource.length) return;
     
     player.currentIndex = index;
-    const song = player.songs[index];
+    const song = songSource[index];
     
     // Update UI
     nowPlayingTitle.textContent = song.title;
@@ -209,16 +233,20 @@ function togglePlay() {
 
 // Play previous song
 function playPrevious() {
+    const isQueueActive = player.queue.length > 0;
+    const songSource = isQueueActive ? player.queue : player.songs;
     let newIndex = player.currentIndex - 1;
-    if (newIndex < 0) newIndex = player.songs.length - 1;
-    playSong(newIndex);
+    if (newIndex < 0) newIndex = songSource.length - 1;
+    playSong(newIndex, isQueueActive);
 }
 
 // Play next song
 function playNext() {
+    const isQueueActive = player.queue.length > 0;
+    const songSource = isQueueActive ? player.queue : player.songs;
     let newIndex = player.currentIndex + 1;
-    if (newIndex >= player.songs.length) newIndex = 0;
-    playSong(newIndex);
+    if (newIndex >= songSource.length) newIndex = 0;
+    playSong(newIndex, isQueueActive);
 }
 
 // Toggle shuffle
@@ -330,7 +358,8 @@ function updateNavUI(view) {
         'player': 'playerView',
         'library': 'libraryView',
         'favorites': 'favoritesView',
-        'playlists': 'playlistsView'
+        'playlists': 'playlistsView',
+        'albums': 'albumsView'
     };
     
     const viewId = viewMap[view];
@@ -377,6 +406,9 @@ function renderCurrentView() {
                 renderPlaylistsView();
             }
             break;
+        case 'albums':
+            renderAlbumsView();
+            break;
     }
 }
 
@@ -410,6 +442,150 @@ function renderRecommendedSongs() {
     
     container.innerHTML = html;
 }
+
+// Render albums view
+function renderAlbumsView() {
+    const container = document.getElementById('albumsGrid');
+
+    if (player.albums.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-compact-disc"></i>
+                <h3>No albums found</h3>
+                <p>Songs with album information will appear here.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const html = player.albums.map(album => `
+        <div class="song-card" onclick="openAlbumDetails('${album.album}')">
+            <div class="song-card-img">
+                <img src="${album.cover_url}" alt="${album.album}">
+                <button class="song-card-play">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            <h3 class="song-card-title">${album.album}</h3>
+            <p class="song-card-artist">${album.song_count} songs</p>
+        </div>
+    `).join('');
+
+    container.innerHTML = html;
+}
+
+// Open album details
+function openAlbumDetails(albumName) {
+    player.currentView = 'albums';
+    updateNavUI('albums');
+    renderAlbumDetails(albumName);
+}
+
+// Render album details
+async function renderAlbumDetails(albumName) {
+    const container = document.getElementById('albumsGrid'); // Reuse the grid container
+    container.innerHTML = '<div style="grid-column: 1 / -1; color: #b3b3b3; padding: 20px;">Loading album...</div>';
+
+    try {
+        const response = await API.getAlbumSongs(albumName);
+
+        if (!response.success) {
+            container.innerHTML = `<div style="grid-column: 1 / -1; color: #dc3545;">Failed to load album: ${response.message}</div>`;
+            return;
+        }
+
+        const songs = response.data.songs;
+        const coverImage = songs.length > 0 ? songs[0].cover_url : '/assets/img/default.png';
+
+        let html = `
+            <div class="playlist-header" style="grid-column: 1 / -1; margin-bottom: 24px;">
+                <button onclick="switchView('albums')" style="background: transparent; border: none; color: #b3b3b3; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding: 0;">
+                    <i class="fas fa-arrow-left"></i> Back to Albums
+                </button>
+                <div style="display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap;">
+                    <div style="width: 180px; height: 180px; background: #282828; border-radius: 8px; overflow: hidden;">
+                        <img src="${coverImage}" alt="${albumName}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <h4 style="color: #fff; margin: 0; font-size: 12px; font-weight: 700; text-transform: uppercase;">Album</h4>
+                        <h1 style="color: #fff; font-size: 48px; font-weight: 900; margin: 8px 0 16px 0; line-height: 1.1;">${albumName}</h1>
+                        <p style="color: #b3b3b3; margin: 0 0 8px 0;">${songs.length} songs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="songs-list" style="grid-column: 1 / -1;">
+        `;
+
+        if (songs.length === 0) {
+            html += `
+                <div class="empty-state">
+                    <i class="fas fa-music"></i>
+                    <h3>Album is empty</h3>
+                </div>
+            `;
+        } else {
+            html += songs.map((song, index) => `
+                <div class="song-list-item" onclick="playAlbumSong(${index}, '${albumName}')">
+                    <div class="song-list-number">${index + 1}</div>
+                    <div class="song-list-img">
+                        <img src="${song.cover_url}" alt="${song.title}">
+                    </div>
+                    <div class="song-list-info">
+                        <h4 class="song-list-title">${song.title}</h4>
+                        <p class="song-list-artist">${song.artist}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        html += '</div>';
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error('Error loading album details:', error);
+        container.innerHTML = '<div style="grid-column: 1 / -1; color: #dc3545;">An error occurred.</div>';
+    }
+}
+
+// Play song from album context
+async function playAlbumSong(index, albumName) {
+    try {
+        const response = await API.getAlbumSongs(albumName);
+        if (response.success) {
+            player.queue = response.data.songs.map(song => ({
+                id: song.id,
+                title: song.title,
+                artist: song.artist,
+                cover: song.cover_url,
+                audio: song.audio_url,
+                playCount: 0
+            }));
+            
+            playSong(index, true);
+            renderQueue();
+        }
+    } catch (error) {
+        console.error('Error playing album song:', error);
+    }
+}
+
+// Play song from favorites context
+function playFavoritesQueue(songId) {
+    const favoriteSongs = player.songs.filter(song => player.favorites.has(song.id));
+    
+    if (favoriteSongs.length === 0) return;
+
+    // The songs in favoriteSongs are already in the format needed for the queue
+    player.queue = favoriteSongs;
+
+    const songIndex = favoriteSongs.findIndex(song => song.id === songId);
+
+    if (songIndex !== -1) {
+        playSong(songIndex, true);
+        renderQueue();
+    }
+}
+
 
 // Render library (list view)
 function renderLibrary() {
@@ -459,7 +635,7 @@ function renderFavorites() {
     }
     
     const html = favoriteSongs.map(song => `
-        <div class="song-card" onclick="playSong(${player.songs.indexOf(song)})">
+        <div class="song-card" onclick="playFavoritesQueue(${song.id})">
             <div class="song-card-img">
                 <img src="${song.cover}" alt="${song.title}">
                 <button class="song-card-play">
@@ -610,7 +786,7 @@ async function playPlaylistSong(index, playlistId) {
     try {
         const response = await API.getPlaylist(playlistId);
         if (response.success) {
-            player.songs = response.data.songs.map(song => ({
+            player.queue = response.data.songs.map(song => ({
                 id: song.id,
                 title: song.title,
                 artist: song.artist,
@@ -619,7 +795,7 @@ async function playPlaylistSong(index, playlistId) {
                 playCount: 0
             }));
             
-            playSong(index);
+            playSong(index, true); // Pass true for isFromQueue
             renderQueue();
         }
     } catch (error) {
@@ -980,26 +1156,37 @@ function toggleQueue() {
 function renderQueue() {
     if (!player.isQueueOpen) return;
     
-    if (player.songs.length === 0) {
+    const songSource = player.queue.length > 0 ? player.queue : player.songs;
+
+    if (songSource.length === 0) {
         queueList.innerHTML = '<div class="queue-empty">Queue is empty</div>';
         return;
     }
     
     let html = '';
     
+    // Add Clear Queue button if queue is active
+    if (player.queue.length > 0) {
+        html += `
+            <button class="btn-clear-queue" onclick="clearQueue()">
+                <i class="fas fa-times"></i> Clear Playlist Queue
+            </button>
+        `;
+    }
+
     // History Section
     if (player.currentIndex > 0) {
         html += '<div class="queue-section-title">History</div>';
         for (let i = 0; i < player.currentIndex; i++) {
-            const song = player.songs[i];
+            const song = songSource[i];
             html += renderQueueItem(song, i, 'history');
         }
     }
     
     // Playing Next Section
     html += '<div class="queue-section-title">Playing Next</div>';
-    for (let i = player.currentIndex; i < player.songs.length; i++) {
-        const song = player.songs[i];
+    for (let i = player.currentIndex; i < songSource.length; i++) {
+        const song = songSource[i];
         const isPlaying = i === player.currentIndex ? 'playing' : '';
         html += renderQueueItem(song, i, isPlaying);
     }
@@ -1008,6 +1195,16 @@ function renderQueue() {
     
     // Setup drag events after rendering
     setupQueueDragEvents();
+}
+
+function clearQueue() {
+    player.queue = [];
+    player.currentIndex = 0;
+    // We can decide to either stop the music or play from the main list
+    // For now, let's just clear and let the user decide.
+    renderQueue();
+    renderRecommendedSongs(); // Re-render the main view
+    showNotification('Playlist queue cleared', 'info');
 }
 
 function renderQueueItem(song, index, extraClass = '') {
@@ -1034,18 +1231,18 @@ function removeFromQueue(event, index) {
     event.stopPropagation();
     
     // Remove from array
-    player.songs.splice(index, 1);
+    player.queue.splice(index, 1);
     
     // Adjust current index
     if (index < player.currentIndex) {
         player.currentIndex--;
     } else if (index === player.currentIndex) {
         // If removed current song, play next (now at same index) or stop if empty
-        if (player.songs.length === 0) {
+        if (player.queue.length === 0) {
             audioPlayer.pause();
             audioPlayer.src = '';
         } else {
-             if (player.currentIndex >= player.songs.length) {
+             if (player.currentIndex >= player.queue.length) {
                 player.currentIndex = 0;
              }
              playSong(player.currentIndex);
@@ -1099,8 +1296,8 @@ function handleDrop(e) {
     
     if (draggedItemIndex !== targetIndex) {
         // Move item in array
-        const item = player.songs.splice(draggedItemIndex, 1)[0];
-        player.songs.splice(targetIndex, 0, item);
+        const item = player.queue.splice(draggedItemIndex, 1)[0];
+        player.queue.splice(targetIndex, 0, item);
         
         // Update current index if needed
         if (player.currentIndex === draggedItemIndex) {

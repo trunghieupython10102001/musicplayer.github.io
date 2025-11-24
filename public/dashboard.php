@@ -232,7 +232,24 @@ $user = getCurrentUser();
         <div class="nav-left">
             <h2>🎵 Music Player</h2>
         </div>
-        <div class="nav-center"></div>
+        <div class="nav-center">
+            <div class="nav-item" onclick="switchView('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="switchView('library')">
+                <i class="fas fa-music"></i>
+                <span>Your Library</span>
+            </div>
+            <div class="nav-item" onclick="switchView('favorites')">
+                <i class="fas fa-heart"></i>
+                <span>Liked Songs</span>
+            </div>
+            <div class="nav-item" onclick="switchView('albums')">
+                <i class="fas fa-compact-disc"></i>
+                <span>Albums</span>
+            </div>
+        </div>
         <div class="nav-right">
             <span class="user-name">👤 <?php echo htmlspecialchars($user['username']); ?></span>
             <button onclick="window.location.href='/index.php'" class="nav-btn" title="Player">
@@ -287,6 +304,16 @@ $user = getCurrentUser();
                 <h3><i class="fas fa-star"></i> Your Favorites</h3>
                 <div id="favoritesContainer" class="loading">Loading favorites...</div>
             </div>
+
+            <!-- Albums View -->
+            <section id="albumsView" class="view-section">
+                <div class="view-header">
+                    <h2 class="view-title">Albums</h2>
+                </div>
+                <div id="albumsGrid" class="grid-view">
+                    <!-- Album cards will be rendered here -->
+                </div>
+            </section>
         </div>
     </div>
 

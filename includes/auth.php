@@ -333,3 +333,24 @@ function generateCSRFToken() {
 function verifyCSRFToken($token) {
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
+
+/**
+ * Log activity to file
+ * 
+ * @param string $message Message to log
+ * @param string $level Log level (info, warning, error)
+ */
+function logActivity($message, $level = 'info') {
+    $logFile = BASE_PATH . '/logs/app.log';
+    $logDir = dirname($logFile);
+    
+    if (!is_dir($logDir)) {
+        mkdir($logDir, 0755, true);
+    }
+    
+    $timestamp = date('Y-m-d H:i:s');
+    $userId = getCurrentUserId() ?? 'guest';
+    $logMessage = "[{$timestamp}] [{$level}] [User: {$userId}] {$message}\n";
+    
+    file_put_contents($logFile, $logMessage, FILE_APPEND);
+}

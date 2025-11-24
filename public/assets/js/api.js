@@ -288,6 +288,20 @@ const API = {
             body: formData,
             headers: headers // Use headers with auth token but no content-type
         });
+    },
+
+    /**
+     * Get all albums
+     */
+    async getAlbums() {
+        return await this.request('/albums/list.php');
+    },
+
+    /**
+     * Get songs for a specific album
+     */
+    async getAlbumSongs(albumName) {
+        return await this.request(`/albums/songs.php?name=${encodeURIComponent(albumName)}`);
     }
 };
 

@@ -801,6 +801,7 @@ $user = getCurrentUser();
 				<li><button class="nav-item active" onclick="switchView('player')"><i class="fas fa-play-circle"></i> Now Playing</button></li>
 				<li><button class="nav-item" onclick="switchView('library')"><i class="fas fa-music"></i> Your Library</button></li>
 				<li><button class="nav-item" onclick="switchView('favorites')"><i class="fas fa-heart"></i> Liked Songs</button></li>
+				<li><button class="nav-item" onclick="switchView('albums')"><i class="fas fa-compact-disc"></i> Albums</button></li>
 				<li><button class="nav-item" onclick="switchView('playlists')"><i class="fas fa-list"></i> Playlists</button></li>
 			</ul>
 
@@ -910,6 +911,15 @@ $user = getCurrentUser();
 					</div>
 
 					<div class="stats-grid" id="playlistsGrid"></div>
+				</div>
+
+				<!-- Albums View -->
+				<div id="albumsView" class="view-section">
+					<div class="view-header">
+						<h2>Albums</h2>
+						<p>Your favorite albums</p>
+					</div>
+					<div class="songs-grid" id="albumsGrid"></div>
 				</div>
 			</div>
 		</main>
