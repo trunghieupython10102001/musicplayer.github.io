@@ -28,3 +28,6 @@ Thumbs.db
 # Environment
 .env
 
+# Memory Bank (documentation for AI assistant)
+memory-bank/
+

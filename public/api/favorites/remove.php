@@ -36,16 +36,41 @@ if ($songId <= 0) {
 $userId = getCurrentUserId();
 $db = Database::getInstance();
 
-// Remove from favorites
-$result = $db->execute(
-    "DELETE FROM favorites WHERE user_id = ? AND song_id = ?",
-    [$userId, $songId]
-);
+try {
+    $db->beginTransaction();
 
-if ($result) {
+    // Check if the favorite exists before deleting
+    $favoriteExists = $db->selectOne(
+        "SELECT id FROM favorites WHERE user_id = ? AND song_id = ?",
+        [$userId, $songId]
+    );
+
+    if (!$favoriteExists) {
+        $db->rollback();
+        jsonResponse(false, 'Song not found in favorites', [], 404);
+        return;
+    }
+
+    // Remove from favorites
+    $result = $db->execute(
+        "DELETE FROM favorites WHERE user_id = ? AND song_id = ?",
+        [$userId, $songId]
+    );
+    
+    // Decrement likes count in song_stats table
+    $db->execute(
+        "UPDATE song_stats SET likes_count = GREATEST(0, likes_count - 1) WHERE song_id = ?",
+        [$songId]
+    );
+
+    $db->commit();
+
     logActivity("Removed song {$songId} from favorites");
     jsonResponse(true, 'Song removed from favorites');
-} else {
-    jsonResponse(false, 'Song not found in favorites', [], 404);
+
+} catch (Exception $e) {
+    $db->rollback();
+    error_log("Remove from favorites error: " . $e->getMessage());
+    jsonResponse(false, 'An error occurred', [], 500);
 }
 

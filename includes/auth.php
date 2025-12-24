@@ -354,3 +354,69 @@ function logActivity($message, $level = 'info') {
     
     file_put_contents($logFile, $logMessage, FILE_APPEND);
 }
+
+/**
+ * Generate password reset token
+ * 
+ * @param int $userId User ID
+ * @return string|null Token or null on failure
+ */
+function generatePasswordResetToken($userId) {
+    $db = Database::getInstance();
+    $token = bin2hex(random_bytes(32));
+    $expiresAt = date('Y-m-d H:i:s', time() + 3600);
+    
+    $query = "INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (?, ?, ?)";
+    $result = $db->execute($query, [$userId, $token, $expiresAt]);
+    
+    return $result ? $token : null;
+}
+
+/**
+ * Verify password reset token
+ * 
+ * @param string $token Reset token
+ * @return array|null User data or null if invalid/expired
+ */
+function verifyPasswordResetToken($token) {
+    $db = Database::getInstance();
+    $query = "SELECT u.id, u.username, u.email 
+              FROM users u 
+              JOIN password_reset_tokens prt ON u.id = prt.user_id 
+              WHERE prt.token = ? AND prt.expires_at > NOW()";
+    return $db->selectOne($query, [$token]);
+}
+
+/**
+ * Reset user password
+ * 
+ * @param int $userId User ID
+ * @param string $newPassword New password
+ * @return bool Success status
+ */
+function resetUserPassword($userId, $newPassword) {
+    $db = Database::getInstance();
+    $hashedPassword = hashPassword($newPassword);
+    
+    $query = "UPDATE users SET password_hash = ? WHERE id = ?";
+    $result = $db->execute($query, [$hashedPassword, $userId]);
+    
+    if ($result) {
+        $deleteQuery = "DELETE FROM password_reset_tokens WHERE user_id = ?";
+        $db->execute($deleteQuery, [$userId]);
+    }
+    
+    return $result;
+}
+
+/**
+ * Invalidate all reset tokens for a user
+ * 
+ * @param int $userId User ID
+ * @return bool Success status
+ */
+function invalidateResetTokens($userId) {
+    $db = Database::getInstance();
+    $query = "DELETE FROM password_reset_tokens WHERE user_id = ?";
+    return $db->execute($query, [$userId]);
+}

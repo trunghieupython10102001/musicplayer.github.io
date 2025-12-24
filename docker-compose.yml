@@ -74,6 +74,17 @@ services:
       - musicplayer_network
     restart: unless-stopped
 
+  # MailHog for Email Testing
+  mailhog:
+    image: mailhog/mailhog
+    container_name: musicplayer_mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - musicplayer_network
+    restart: unless-stopped
+
 networks:
   musicplayer_network:
     driver: bridge

@@ -53,18 +53,34 @@ if ($alreadyFavorited) {
 $query = "INSERT INTO favorites (user_id, song_id, added_at) VALUES (?, ?, NOW())";
 
 try {
+    $db->beginTransaction();
+
+    // Add to favorites table
     $result = $db->execute($query, [$userId, $songId]);
-    
-    if ($result) {
-        logActivity("Added song {$songId} to favorites");
-        jsonResponse(true, 'Song added to favorites', [
-            'song_id' => $songId,
-            'song_title' => $songExists['title']
-        ]);
-    } else {
+
+    if (!$result) {
+        $db->rollback();
         jsonResponse(false, 'Failed to add to favorites', [], 500);
+        return;
     }
+
+    // Upsert likes count in song_stats table
+    $db->execute(
+        "INSERT INTO song_stats (song_id, likes_count) VALUES (?, 1)
+         ON DUPLICATE KEY UPDATE likes_count = likes_count + 1",
+        [$songId]
+    );
+
+    $db->commit();
+    
+    logActivity("Added song {$songId} to favorites");
+    jsonResponse(true, 'Song added to favorites', [
+        'song_id' => $songId,
+        'song_title' => $songExists['title']
+    ]);
+
 } catch (Exception $e) {
+    $db->rollback();
     error_log("Add to favorites error: " . $e->getMessage());
     jsonResponse(false, 'An error occurred', [], 500);
 }

@@ -116,6 +116,33 @@ CREATE TABLE IF NOT EXISTS play_history (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
+-- Table: song_stats
+-- Stores song statistics like play count and likes
+-- ============================================
+CREATE TABLE IF NOT EXISTS song_stats (
+    song_id INT PRIMARY KEY,
+    play_count INT DEFAULT 0,
+    likes_count INT DEFAULT 0,
+    FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- Table: password_reset_tokens
+-- Stores password reset tokens for forgot password feature
+-- ============================================
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) UNIQUE NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_token (token),
+    INDEX idx_user_id (user_id),
+    INDEX idx_expires_at (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
 -- Insert Default Admin User
 -- Username: admin
 -- Password: admin123 (hashed with bcrypt)

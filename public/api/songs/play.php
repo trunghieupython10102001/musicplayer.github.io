@@ -44,8 +44,15 @@ try {
     // Start transaction
     $db->beginTransaction();
     
-    // Increment play count
+    // Increment play count in songs table (deprecated, will be removed later)
     $db->execute("UPDATE songs SET play_count = play_count + 1 WHERE id = ?", [$songId]);
+
+    // Upsert play count in song_stats table
+    $db->execute(
+        "INSERT INTO song_stats (song_id, play_count) VALUES (?, 1)
+         ON DUPLICATE KEY UPDATE play_count = play_count + 1",
+        [$songId]
+    );
     
     // Log to play history
     $db->execute(

@@ -82,6 +82,10 @@ $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : '/index.php';
             </div>
 
             <div class="auth-links" style="margin-top: 10px;">
+                <a href="/forgot-password.php" style="color: #999; font-size: 0.9em;">Forgot password?</a>
+            </div>
+
+            <div class="auth-links" style="margin-top: 10px;">
                 <small style="color: #999;">
                     Demo: admin / admin123
                 </small>

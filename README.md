@@ -5,13 +5,14 @@ A modern music streaming platform built with PHP, MySQL, and vanilla JavaScript,
 ## Features
 
 ### MVP (Minimum Viable Product)
-- 🔐 User Authentication (Register/Login)
+- 🔐 User Authentication (Register/Login/Password Reset)
 - 🎵 Music Library with 78+ songs
 - 📝 Custom Playlists
 - ❤️ Favorites System
 - 📊 Play History Tracking
 - 🔍 Search Functionality
 - 👨‍💼 Admin Panel for Song Management
+- 📧 Email Notifications (Password Reset)
 
 ## Tech Stack
 
@@ -29,6 +30,7 @@ A modern music streaming platform built with PHP, MySQL, and vanilla JavaScript,
 - Docker & Docker Compose
 - Nginx Web Server
 - phpMyAdmin
+- MailHog (Email Testing)
 
 ## Project Structure
 
@@ -75,6 +77,7 @@ docker-compose logs -f
 4. **Access the application**
 - Music Player: http://localhost:8080
 - phpMyAdmin: http://localhost:8081
+- MailHog (Email Testing): http://localhost:8025
 
 ### Default Credentials
 
@@ -93,10 +96,11 @@ docker-compose logs -f
 ### For Users
 1. Register a new account at `/register.php`
 2. Login at `/login.php`
-3. Browse songs in the library
-4. Create playlists
-5. Add songs to favorites
-6. View your play history
+3. Forgot password? Use `/forgot-password.php` to reset
+4. Browse songs in the library
+5. Create playlists
+6. Add songs to favorites
+7. View your play history
 
 ### For Admins
 1. Login with admin credentials
@@ -111,6 +115,8 @@ docker-compose logs -f
 - `POST /api/auth/login.php` - Login
 - `POST /api/auth/logout.php` - Logout
 - `GET /api/auth/check.php` - Check session
+- `POST /api/auth/forgot-password.php` - Request password reset
+- `POST /api/auth/reset-password.php` - Reset password with token
 
 ### Songs
 - `GET /api/songs/list.php` - List all songs
@@ -232,8 +238,10 @@ This project is open source and available under the MIT License.
 
 ## Roadmap
 
+### Completed Features
+- [x] Password reset functionality with email notifications
+
 ### Future Features
-- [ ] Password reset functionality
 - [ ] Email verification
 - [ ] Social features (follow users)
 - [ ] Comments and ratings
