@@ -55,17 +55,34 @@ $user = getCurrentUser();
         }
         
         .admin-card {
-            background: #2a2a2a;
-            border-radius: 12px;
+            background: linear-gradient(145deg, #2a2a2a 0%, #252525 100%);
+            border-radius: 16px;
             padding: 30px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
             margin-bottom: 24px;
+            border: 1px solid rgba(50, 232, 74, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .admin-card:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+            border-color: rgba(50, 232, 74, 0.2);
+            transform: translateY(-2px);
         }
         
         .admin-card h2 {
             color: #32e84a;
-            font-size: 22px;
+            font-size: 24px;
             margin-bottom: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 2px 8px rgba(50, 232, 74, 0.3);
+        }
+        
+        .admin-card h2 i {
+            font-size: 26px;
         }
         
         .upload-form {
@@ -206,23 +223,94 @@ $user = getCurrentUser();
             gap: 16px;
         }
         
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .stats-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+        
         .stat-box {
-            background: #333;
-            padding: 20px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #333 0%, #2d2d2d 100%);
+            padding: 24px 20px;
+            border-radius: 12px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #32e84a 0%, #28c23d 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(50, 232, 74, 0.2);
+            border-color: rgba(50, 232, 74, 0.3);
+        }
+        
+        .stat-box:hover::before {
+            transform: scaleX(1);
         }
         
         .stat-number {
-            font-size: 36px;
-            font-weight: bold;
-            color: #32e84a;
+            font-size: 40px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #32e84a 0%, #4eff6a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 8px;
+            line-height: 1.2;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-box:hover .stat-number {
+            transform: scale(1.05);
         }
         
         .stat-label {
-            color: #999;
+            color: #aaa;
             font-size: 13px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .stat-label i {
+            font-size: 14px;
+            color: #32e84a;
         }
         
         .alert {
@@ -246,6 +334,135 @@ $user = getCurrentUser();
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+        }
+        
+        /* Enhanced Statistics Sections */
+        .stats-section {
+            background: linear-gradient(135deg, #333 0%, #2d2d2d 100%);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .stats-section:hover {
+            border-color: rgba(50, 232, 74, 0.2);
+            box-shadow: 0 4px 16px rgba(50, 232, 74, 0.1);
+        }
+        
+        .stats-section h3 {
+            color: #32e84a;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stats-section h3 i {
+            font-size: 18px;
+        }
+        
+        .genre-badge {
+            background: linear-gradient(135deg, #2a2a2a 0%, #252525 100%);
+            padding: 12px 18px;
+            border-radius: 8px;
+            border-left: 3px solid #32e84a;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .genre-badge:hover {
+            transform: translateX(4px);
+            background: linear-gradient(135deg, #333 0%, #2d2d2d 100%);
+            box-shadow: 0 4px 12px rgba(50, 232, 74, 0.15);
+        }
+        
+        .genre-badge div:first-child {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+        
+        .genre-badge div:last-child {
+            color: #999;
+            font-size: 13px;
+        }
+        
+        .activity-item {
+            padding: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+        }
+        
+        .activity-item:hover {
+            background: rgba(50, 232, 74, 0.05);
+            border-bottom-color: rgba(50, 232, 74, 0.1);
+            padding-left: 18px;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .top-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #32e84a 0%, #4eff6a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+        
+        .top-stat-label {
+            color: #999;
+            font-size: 13px;
+        }
+        
+        .top-stat-count {
+            color: #32e84a;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        
+        /* Loading animation */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        /* Scrollbar styling */
+        .stats-section::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .stats-section::-webkit-scrollbar-track {
+            background: #2a2a2a;
+            border-radius: 3px;
+        }
+        
+        .stats-section::-webkit-scrollbar-thumb {
+            background: #32e84a;
+            border-radius: 3px;
+        }
+        
+        .stats-section::-webkit-scrollbar-thumb:hover {
+            background: #4eff6a;
         }
     </style>
 </head>
@@ -279,20 +496,53 @@ $user = getCurrentUser();
 
             <!-- Statistics -->
             <div class="admin-card">
-                <h2>Statistics</h2>
+                <h2><i class="fas fa-chart-line"></i> Statistics Overview</h2>
                 <div class="stats-grid" id="statsContainer">
                     <div class="stat-box">
                         <div class="stat-number" id="totalSongs">-</div>
-                        <div class="stat-label">Total Songs</div>
+                        <div class="stat-label"><i class="fas fa-music"></i> Total Songs</div>
                     </div>
                     <div class="stat-box">
                         <div class="stat-number" id="totalUsers">-</div>
-                        <div class="stat-label">Total Users</div>
+                        <div class="stat-label"><i class="fas fa-users"></i> Total Users</div>
                     </div>
                     <div class="stat-box">
                         <div class="stat-number" id="totalPlays">-</div>
-                        <div class="stat-label">Total Plays</div>
+                        <div class="stat-label"><i class="fas fa-play-circle"></i> Total Plays</div>
                     </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="totalFavorites">-</div>
+                        <div class="stat-label"><i class="fas fa-heart"></i> Total Favorites</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="totalPlaylists">-</div>
+                        <div class="stat-label"><i class="fas fa-list"></i> Playlists</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="recentUsers">-</div>
+                        <div class="stat-label"><i class="fas fa-user-plus"></i> New Users (7d)</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" class="stats-two-col">
+                    <div class="stats-section">
+                        <h3><i class="fas fa-trophy"></i> Top Genre</h3>
+                        <div id="topGenre" class="loading">Loading...</div>
+                    </div>
+                    <div class="stats-section">
+                        <h3><i class="fas fa-fire"></i> Most Played</h3>
+                        <div id="mostPlayed" class="loading">Loading...</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;" class="stats-section">
+                    <h3><i class="fas fa-chart-pie"></i> Genre Distribution</h3>
+                    <div id="genreDistribution" style="display: flex; flex-wrap: wrap; gap: 10px;" class="loading">Loading...</div>
+                </div>
+
+                <div style="margin-top: 20px;" class="stats-section">
+                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                    <div id="recentActivity" style="max-height: 300px; overflow-y: auto;" class="loading">Loading...</div>
                 </div>
             </div>
 
@@ -501,14 +751,116 @@ $user = getCurrentUser();
         // Load statistics
         async function loadStats() {
             try {
-                const songsResponse = await API.getSongs(1, 1);
-                if (songsResponse.success) {
-                    const totalSongs = songsResponse.data.pagination.total_items;
-                    document.getElementById('totalSongs').textContent = totalSongs;
+                const response = await fetch('/api/admin/stats.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data;
+                    
+                    // Update main stats
+                    document.getElementById('totalSongs').textContent = stats.total_songs.toLocaleString();
+                    document.getElementById('totalUsers').textContent = stats.total_users.toLocaleString();
+                    document.getElementById('totalPlays').textContent = stats.total_plays.toLocaleString();
+                    document.getElementById('totalFavorites').textContent = stats.total_favorites.toLocaleString();
+                    document.getElementById('totalPlaylists').textContent = stats.total_playlists.toLocaleString();
+                    document.getElementById('recentUsers').textContent = stats.recent_users.toLocaleString();
+                    
+                    // Top genre
+                    const topGenreEl = document.getElementById('topGenre');
+                    topGenreEl.classList.remove('loading');
+                    if (stats.top_genre) {
+                        topGenreEl.innerHTML = `
+                            <div class="top-stat-value">${escapeHtml(stats.top_genre.name)}</div>
+                            <div class="top-stat-label">Most popular genre</div>
+                            <div class="top-stat-count">${stats.top_genre.count} songs</div>
+                        `;
+                    } else {
+                        topGenreEl.innerHTML = '<div class="top-stat-label">No data available</div>';
+                    }
+                    
+                    // Most played song
+                    const mostPlayedEl = document.getElementById('mostPlayed');
+                    mostPlayedEl.classList.remove('loading');
+                    if (stats.most_played_song) {
+                        mostPlayedEl.innerHTML = `
+                            <div class="top-stat-value">${escapeHtml(stats.most_played_song.title)}</div>
+                            <div class="top-stat-label">${escapeHtml(stats.most_played_song.artist)}</div>
+                            <div class="top-stat-count">${stats.most_played_song.play_count} plays</div>
+                        `;
+                    } else {
+                        mostPlayedEl.innerHTML = '<div class="top-stat-label">No data available</div>';
+                    }
+                    
+                    // Genre distribution
+                    const genreDistEl = document.getElementById('genreDistribution');
+                    genreDistEl.classList.remove('loading');
+                    if (stats.genre_distribution && stats.genre_distribution.length > 0) {
+                        genreDistEl.innerHTML = stats.genre_distribution.map(genre => `
+                            <div class="genre-badge">
+                                <div>${escapeHtml(genre.genre)}</div>
+                                <div>${genre.count} songs</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        genreDistEl.innerHTML = '<div class="top-stat-label">No data available</div>';
+                    }
+                    
+                    // Recent activity
+                    const activityEl = document.getElementById('recentActivity');
+                    activityEl.classList.remove('loading');
+                    if (stats.recent_activity && stats.recent_activity.length > 0) {
+                        activityEl.innerHTML = stats.recent_activity.map(activity => {
+                            const date = new Date(activity.played_at);
+                            const timeAgo = getTimeAgo(date);
+                            return `
+                                <div class="activity-item">
+                                    <div>
+                                        <div style="color: #fff; margin-bottom: 4px;">
+                                            <i class="fas fa-user" style="color: #32e84a; margin-right: 6px;"></i>
+                                            <strong>${escapeHtml(activity.username)}</strong> played
+                                        </div>
+                                        <div style="color: #bbb; font-size: 13px; margin-left: 22px;">
+                                            ${escapeHtml(activity.song_title)} <span style="color: #666;">•</span> ${escapeHtml(activity.song_artist)}
+                                        </div>
+                                    </div>
+                                    <div style="color: #999; font-size: 12px; white-space: nowrap; margin-left: 10px;">
+                                        ${timeAgo}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        activityEl.innerHTML = '<div style="padding: 20px; text-align: center;" class="top-stat-label">No recent activity</div>';
+                    }
+                } else {
+                    console.error('Failed to load stats:', data.message);
                 }
             } catch (error) {
                 console.error('Error loading stats:', error);
             }
+        }
+        
+        // Helper function to calculate time ago
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            const intervals = {
+                year: 31536000,
+                month: 2592000,
+                week: 604800,
+                day: 86400,
+                hour: 3600,
+                minute: 60
+            };
+            
+            for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                const interval = Math.floor(seconds / secondsInUnit);
+                if (interval >= 1) {
+                    return interval === 1 ? `1 ${unit} ago` : `${interval} ${unit}s ago`;
+                }
+            }
+            
+            return 'Just now';
         }
 
         // Handle upload form
