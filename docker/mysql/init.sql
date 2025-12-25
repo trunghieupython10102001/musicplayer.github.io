@@ -244,10 +244,8 @@ INSERT INTO songs (title, artist, album, file_path, cover_image, genre) VALUES
 -- ============================================
 -- Already created above with table definitions
 
--- ============================================
 -- Success Message
 -- ============================================
 SELECT 'Database initialization completed successfully!' as message;
 SELECT CONCAT('Total songs inserted: ', COUNT(*)) as count FROM songs;
 SELECT CONCAT('Admin user created: admin@musicplayer.com (password: admin123)') as admin_info;
-

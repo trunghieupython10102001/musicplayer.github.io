@@ -56,13 +56,29 @@ try {
         exit();
     }
     
-    $token = generatePasswordResetToken($user['id']);
-    
-    if (!$token) {
+    // Check if password_reset_tokens table exists
+    try {
+        $db->selectOne("SELECT 1 FROM password_reset_tokens LIMIT 1");
+    } catch (Exception $e) {
+        error_log("Password reset tokens table missing: " . $e->getMessage());
         http_response_code(500);
         echo json_encode([
             'success' => false,
-            'message' => 'Failed to generate reset token'
+            'message' => 'Password reset feature is not configured. Please run database migrations.',
+            'debug' => 'Table password_reset_tokens does not exist'
+        ]);
+        exit();
+    }
+    
+    $token = generatePasswordResetToken($user['id']);
+    
+    if (!$token) {
+        error_log("Failed to generate reset token for user ID: {$user['id']}");
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to generate reset token. Please check server logs.',
+            'debug' => 'Token generation returned null'
         ]);
         exit();
     }

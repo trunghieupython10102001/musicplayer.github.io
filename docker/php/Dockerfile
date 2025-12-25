@@ -35,8 +35,8 @@ RUN echo "upload_max_filesize = 100M" >> /usr/local/etc/php/conf.d/uploads.ini \
 # Configure sendmail for MailHog via msmtp
 RUN echo "sendmail_path = '/usr/bin/msmtp -C /etc/msmtprc -t'" >> /usr/local/etc/php/conf.d/mail.ini
 
-# Create msmtp configuration
-RUN echo "account default\nhost musicplayer_mailhog\nport 1025\nfrom noreply@musicplayer.local\ntls off\nauto_from on" > /etc/msmtprc && \
+# Create msmtp configuration (will be updated by entrypoint.sh)
+RUN echo "account default\nhost mailhog\nport 1025\nfrom noreply@musicplayer.local\ntls off\nauto_from on" > /etc/msmtprc && \
     chmod 644 /etc/msmtprc
 
 # Copy entrypoint script

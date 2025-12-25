@@ -29,6 +29,7 @@ services:
       - ./uploads:/var/www/html/uploads
     depends_on:
       - mysql
+      - mailhog
     networks:
       - musicplayer_network
     restart: unless-stopped
@@ -37,6 +38,8 @@ services:
       - DB_NAME=musicplayer
       - DB_USER=musicplayer_user
       - DB_PASS=musicplayer_pass
+      - MAILHOG_HOST=mailhog
+      - MAILHOG_PORT=1025
 
   # MySQL Database
   mysql:

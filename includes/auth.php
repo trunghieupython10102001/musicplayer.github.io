@@ -362,14 +362,27 @@ function logActivity($message, $level = 'info') {
  * @return string|null Token or null on failure
  */
 function generatePasswordResetToken($userId) {
-    $db = Database::getInstance();
-    $token = bin2hex(random_bytes(32));
-    $expiresAt = date('Y-m-d H:i:s', time() + 3600);
-    
-    $query = "INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (?, ?, ?)";
-    $result = $db->execute($query, [$userId, $token, $expiresAt]);
-    
-    return $result ? $token : null;
+    try {
+        $db = Database::getInstance();
+        $token = bin2hex(random_bytes(32));
+        $expiresAt = date('Y-m-d H:i:s', time() + 3600);
+        
+        // Delete any existing tokens for this user first
+        $db->execute("DELETE FROM password_reset_tokens WHERE user_id = ?", [$userId]);
+        
+        $query = "INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (?, ?, ?)";
+        $result = $db->execute($query, [$userId, $token, $expiresAt]);
+        
+        if (!$result) {
+            error_log("Failed to insert password reset token for user ID: $userId");
+            return null;
+        }
+        
+        return $token;
+    } catch (Exception $e) {
+        error_log("Error generating password reset token: " . $e->getMessage());
+        return null;
+    }
 }
 
 /**
