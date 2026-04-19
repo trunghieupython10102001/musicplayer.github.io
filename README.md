@@ -56,6 +56,11 @@ musicplayer/
 
 ## Getting Started
 
+## Tai Lieu Tieng Viet
+
+- Huong dan nhanh: `HUONG_DAN_NHANH_VIETNAM.md`
+- Huong dan cai dat chi tiet: `HUONG_DAN_CAI_DAT_VIETNAM.md`
+
 ### Prerequisites
 - Docker Desktop installed
 - Docker Compose
