@@ -1,8 +1,10 @@
 package com.musicplayer.web;
 
+import com.musicplayer.config.AppConfig;
 import com.musicplayer.db.Database;
 import com.musicplayer.model.User;
 import com.musicplayer.service.AuthService;
+import com.musicplayer.service.MailService;
 import com.musicplayer.util.AppUtil;
 import com.musicplayer.util.RequestUtil;
 import jakarta.servlet.ServletException;
@@ -29,11 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.mail.MessagingException;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 100 * 1024 * 1024, maxRequestSize = 120 * 1024 * 1024)
 public class ApiServlet extends BaseServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -243,8 +247,14 @@ public class ApiServlet extends BaseServlet {
         Optional<User> user = AuthService.loadUserByEmail(email);
         if (user.isPresent()) {
             String token = AuthService.createPasswordResetToken(user.get().id());
-            String resetUrl = request.getScheme() + "://" + request.getServerName() + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort()) + "/reset-password.php?token=" + token;
-            getServletContext().log("Password reset requested for " + user.get().email() + ": " + resetUrl);
+            String resetUrl = AppConfig.get("app.baseUrl", "http://localhost:8080") + "/reset-password.php?token=" + token;
+            try {
+                MailService.sendPasswordResetEmail(user.get().email(), user.get().username(), resetUrl);
+            } catch (MessagingException ex) {
+                getServletContext().log("Failed to send password reset email for " + user.get().email() + ": " + ex.getMessage(), ex);
+                error(response, 500, "Failed to send reset email");
+                return;
+            }
         }
         ok(response, "If an account exists with this email, a reset link has been sent", Map.of("email_sent", true));
     }
@@ -787,8 +797,9 @@ public class ApiServlet extends BaseServlet {
             error(response, 400, "Audio file and cover image are required");
             return;
         }
-        Path audioDir = Path.of(getServletContext().getRealPath("/uploads/songs"));
-        Path coverDir = Path.of(getServletContext().getRealPath("/uploads/covers"));
+        Path uploadBase = Path.of(AppConfig.get("app.uploadBase", "/data/uploads"));
+        Path audioDir = uploadBase.resolve("songs");
+        Path coverDir = uploadBase.resolve("covers");
         Files.createDirectories(audioDir);
         Files.createDirectories(coverDir);
         String audioName = storedFilename(audioFile);
@@ -872,8 +883,9 @@ public class ApiServlet extends BaseServlet {
             }
             execute(connection, "DELETE FROM songs WHERE id = ?", id);
             if (coverImage != null && coverImage.contains("_")) {
-                Files.deleteIfExists(Path.of(getServletContext().getRealPath("/uploads/songs")).resolve(filePath));
-                Files.deleteIfExists(Path.of(getServletContext().getRealPath("/uploads/covers")).resolve(coverImage));
+                Path uploadBase = Path.of(AppConfig.get("app.uploadBase", "/data/uploads"));
+                Files.deleteIfExists(uploadBase.resolve("songs").resolve(filePath));
+                Files.deleteIfExists(uploadBase.resolve("covers").resolve(coverImage));
             }
             ok(response, "Song deleted successfully", Map.of());
         }
@@ -923,7 +935,7 @@ public class ApiServlet extends BaseServlet {
         song.put("cover_url", AppUtil.coverUrl(rs.getString("cover_image")));
         song.put("audio_url", AppUtil.audioUrl(rs.getString("file_path")));
         song.put("genre", rs.getString("genre"));
-        song.put("release_year", rs.getObject("release_year"));
+        song.put("release_year", optionalColumn(rs, "release_year"));
         song.put("play_count", rs.getInt("play_count"));
         try {
             Timestamp createdAt = rs.getTimestamp("created_at");
@@ -933,6 +945,14 @@ public class ApiServlet extends BaseServlet {
         } catch (SQLException ignored) {
         }
         return song;
+    }
+
+    private Object optionalColumn(ResultSet rs, String columnName) {
+        try {
+            return rs.getObject(columnName);
+        } catch (SQLException ignored) {
+            return null;
+        }
     }
 
     private boolean ownsPlaylist(Connection connection, int playlistId, int userId) throws SQLException {

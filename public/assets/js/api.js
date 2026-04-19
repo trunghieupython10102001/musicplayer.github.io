@@ -17,14 +17,18 @@ const API = {
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
         const token = localStorage.getItem('authToken');
+        const isFormData = options.body instanceof FormData;
         
         const defaultOptions = {
             headers: {
-                'Content-Type': 'application/json',
                 ...(token ? { 'Authorization': `Bearer ${token}` } : {})
             },
             credentials: 'include' // Include cookies for session
         };
+
+        if (!isFormData) {
+            defaultOptions.headers['Content-Type'] = 'application/json';
+        }
         
         const config = { ...defaultOptions, ...options };
         
@@ -279,14 +283,9 @@ const API = {
      * Upload new song (admin only)
      */
     async uploadSong(formData) {
-        // Don't set Content-Type header for FormData, fetch will set it with boundary
-        const token = localStorage.getItem('authToken');
-        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-
         return await this.request('/admin/upload.php', {
             method: 'POST',
-            body: formData,
-            headers: headers // Use headers with auth token but no content-type
+            body: formData
         });
     },
 

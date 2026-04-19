@@ -23,6 +23,8 @@ services:
       context: .
       dockerfile: ./docker/tomcat/Dockerfile
     container_name: musicplayer_tomcat
+    volumes:
+      - ./uploads:/data/uploads
     depends_on:
       - mysql
       - mailhog
@@ -35,6 +37,10 @@ services:
       - DB_USER=musicplayer_user
       - DB_PASS=musicplayer_pass
       - JWT_SECRET=musicplayer_jwt_secret_key_change_this_in_production
+      - MAIL_HOST=mailhog
+      - MAIL_PORT=1025
+      - MAIL_AUTH=false
+      - MAIL_STARTTLS=false
 
   # MySQL Database
   mysql:

@@ -136,18 +136,18 @@ User currentUser = (User) request.getAttribute("currentUser");
         </div>
     </div>
 
-    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/api.js?v=2"></script>
     <script>
         function showAlert(message, type = 'success') {
             const alert = document.getElementById('alert');
             alert.textContent = message;
-            alert.className = `alert alert-${type} show`;
+            alert.className = 'alert alert-' + type + ' show';
             setTimeout(() => alert.classList.remove('show'), 5000);
         }
 
         async function loadStats() {
             const response = await fetch('/api/admin/stats.php', {
-                headers: { Authorization: `Bearer ${localStorage.getItem('authToken') || ''}` }
+                credentials: 'same-origin'
             });
             const data = await response.json();
             if (!data.success) {
@@ -155,14 +155,20 @@ User currentUser = (User) request.getAttribute("currentUser");
                 return;
             }
             const stats = data.data || {};
-            document.getElementById('statsGrid').innerHTML = `
-                <div class="stat-box"><div class="stat-number">${stats.total_songs ?? 0}</div><div class="stat-label">Songs</div></div>
-                <div class="stat-box"><div class="stat-number">${stats.total_users ?? 0}</div><div class="stat-label">Users</div></div>
-                <div class="stat-box"><div class="stat-number">${stats.total_plays ?? 0}</div><div class="stat-label">Plays</div></div>
-                <div class="stat-box"><div class="stat-number">${stats.total_favorites ?? 0}</div><div class="stat-label">Favorites</div></div>
-                <div class="stat-box"><div class="stat-number">${stats.total_playlists ?? 0}</div><div class="stat-label">Playlists</div></div>
-                <div class="stat-box"><div class="stat-number">${stats.recent_users ?? 0}</div><div class="stat-label">Recent Users</div></div>
-            `;
+            const totalSongs = stats.total_songs == null ? 0 : stats.total_songs;
+            const totalUsers = stats.total_users == null ? 0 : stats.total_users;
+            const totalPlays = stats.total_plays == null ? 0 : stats.total_plays;
+            const totalFavorites = stats.total_favorites == null ? 0 : stats.total_favorites;
+            const totalPlaylists = stats.total_playlists == null ? 0 : stats.total_playlists;
+            const recentUsers = stats.recent_users == null ? 0 : stats.recent_users;
+
+            document.getElementById('statsGrid').innerHTML = ''
+                + '<div class="stat-box"><div class="stat-number">' + totalSongs + '</div><div class="stat-label">Songs</div></div>'
+                + '<div class="stat-box"><div class="stat-number">' + totalUsers + '</div><div class="stat-label">Users</div></div>'
+                + '<div class="stat-box"><div class="stat-number">' + totalPlays + '</div><div class="stat-label">Plays</div></div>'
+                + '<div class="stat-box"><div class="stat-number">' + totalFavorites + '</div><div class="stat-label">Favorites</div></div>'
+                + '<div class="stat-box"><div class="stat-number">' + totalPlaylists + '</div><div class="stat-label">Playlists</div></div>'
+                + '<div class="stat-box"><div class="stat-number">' + recentUsers + '</div><div class="stat-label">Recent Users</div></div>';
         }
 
         function bindFileName(inputId, outputId) {
