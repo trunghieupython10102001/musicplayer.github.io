@@ -1,6 +1,6 @@
-# Music Player - Full Stack Web Application
+# Music Player - JSP Migration
 
-A modern music streaming platform built with PHP, MySQL, and vanilla JavaScript, running on Docker.
+A music streaming platform built with JSP/Servlets, MySQL, and vanilla JavaScript, running on Docker with Tomcat and Nginx.
 
 ## Features
 
@@ -22,9 +22,11 @@ A modern music streaming platform built with PHP, MySQL, and vanilla JavaScript,
 - AJAX/Fetch API
 
 ### Backend
-- PHP 8.2 (PHP-FPM)
+- Java 17
+- JSP / Jakarta Servlets on Tomcat 10
+- Maven WAR packaging
 - MySQL 8.0
-- RESTful API
+- REST-style API with legacy `.php` route compatibility
 
 ### Infrastructure
 - Docker & Docker Compose
@@ -36,16 +38,19 @@ A modern music streaming platform built with PHP, MySQL, and vanilla JavaScript,
 
 ```
 musicplayer/
-├── docker/                     # Docker configuration
-│   ├── nginx/                  # Nginx config
-│   ├── php/                    # PHP Dockerfile
-│   └── mysql/                  # Database init script
-├── public/                     # Web root
-│   ├── api/                    # API endpoints
-│   ├── assets/                 # Static files
-│   └── *.php                   # Web pages
-├── includes/                   # PHP includes
+├── docker/
+│   ├── mysql/                  # Database init script
+│   ├── nginx/                  # Reverse proxy config
+│   └── tomcat/                 # Tomcat image build
+├── public/
+│   └── assets/                 # Static frontend assets
+├── src/
+│   └── main/
+│       ├── java/               # Servlets, services, config, DB access
+│       ├── resources/          # Application properties
+│       └── webapp/             # JSP views and web.xml
 ├── uploads/                    # User uploads
+├── pom.xml                     # Maven build
 └── docker-compose.yml          # Docker orchestration
 ```
 
@@ -110,6 +115,8 @@ docker-compose logs -f
 
 ## API Endpoints
 
+The Java migration preserves the legacy `.php` route surface so the existing frontend JavaScript continues to work.
+
 ### Authentication
 - `POST /api/auth/register.php` - Register new user
 - `POST /api/auth/login.php` - Login
@@ -153,9 +160,9 @@ docker-compose down
 docker-compose logs -f
 ```
 
-### Restart specific service
+### Restart Tomcat
 ```bash
-docker-compose restart php
+docker-compose restart tomcat
 ```
 
 ### Rebuild containers
@@ -168,9 +175,9 @@ docker-compose up -d --build
 docker exec -it musicplayer_mysql mysql -u root -p
 ```
 
-### Access PHP container
+### Access Tomcat container
 ```bash
-docker exec -it musicplayer_php sh
+docker exec -it musicplayer_tomcat sh
 ```
 
 ## Development
@@ -179,15 +186,16 @@ docker exec -it musicplayer_php sh
 See `docker/mysql/init.sql` for complete schema
 
 ### Adding New Features
-1. Create API endpoint in `/public/api/`
-2. Add frontend logic in `/public/assets/js/`
-3. Update database if needed
-4. Test thoroughly
+1. Create or update Java code in `src/main/java/`
+2. Add or update JSP views in `src/main/webapp/WEB-INF/views/`
+3. Add frontend logic in `public/assets/js/`
+4. Update database schema in `docker/mysql/init.sql` if needed
+5. Test through Docker
 
 ### File Upload Limits
 - Max file size: 100MB
 - Allowed formats: MP3, WAV, OGG
-- Upload directory: `/uploads/songs/`
+- Upload directory inside the deployed app: `/uploads/songs/`
 
 ## Troubleshooting
 
@@ -200,6 +208,10 @@ docker-compose up -d --build
 ### Database connection error
 - Check if MySQL container is running: `docker ps`
 - Check logs: `docker-compose logs mysql`
+
+### JSP/Tomcat issue
+- Rebuild the app image: `docker-compose build tomcat`
+- Check logs: `docker-compose logs tomcat`
 
 ### Permission issues
 ```bash
@@ -239,7 +251,8 @@ This project is open source and available under the MIT License.
 ## Roadmap
 
 ### Completed Features
-- [x] Password reset functionality with email notifications
+- [x] Password reset token flow
+- [x] JSP/Servlet migration with Tomcat runtime
 
 ### Future Features
 - [ ] Email verification
@@ -262,4 +275,3 @@ For issues and questions:
 ---
 
 **Enjoy your music! 🎵**
-

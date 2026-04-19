@@ -1325,8 +1325,10 @@ window.onclick = function(event) {
     // Let's keep it toggle-only for now as per request "side bar"
 };
 
-// Check if user is admin (set on page load from PHP)
-window.isAdmin = false;
+// Preserve admin status injected by the server-rendered page.
+if (typeof window.isAdmin === 'undefined') {
+    window.isAdmin = false;
+}
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', init);

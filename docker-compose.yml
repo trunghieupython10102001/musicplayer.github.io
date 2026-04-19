@@ -12,21 +12,17 @@ services:
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./uploads:/var/www/html/uploads
     depends_on:
-      - php
+      - tomcat
     networks:
       - musicplayer_network
     restart: unless-stopped
 
-  # PHP-FPM
-  php:
+  # Tomcat JSP/Servlet application
+  tomcat:
     build:
-      context: ./docker/php
-      dockerfile: Dockerfile
-    container_name: musicplayer_php
-    volumes:
-      - ./public:/var/www/html
-      - ./includes:/var/www/includes
-      - ./uploads:/var/www/html/uploads
+      context: .
+      dockerfile: ./docker/tomcat/Dockerfile
+    container_name: musicplayer_tomcat
     depends_on:
       - mysql
       - mailhog
@@ -38,8 +34,7 @@ services:
       - DB_NAME=musicplayer
       - DB_USER=musicplayer_user
       - DB_PASS=musicplayer_pass
-      - MAILHOG_HOST=mailhog
-      - MAILHOG_PORT=1025
+      - JWT_SECRET=musicplayer_jwt_secret_key_change_this_in_production
 
   # MySQL Database
   mysql:
@@ -95,4 +90,3 @@ networks:
 volumes:
   mysql_data:
     driver: local
-
