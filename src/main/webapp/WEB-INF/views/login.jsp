@@ -2,7 +2,7 @@
 <%
 String redirect = request.getParameter("redirect");
 if (redirect == null || redirect.isBlank()) {
-    redirect = "/index.php";
+    redirect = "/index";
 }
 %>
 <!DOCTYPE html>
@@ -62,11 +62,11 @@ if (redirect == null || redirect.isBlank()) {
             </form>
 
             <div class="auth-links">
-                Don't have an account? <a href="/register.php">Register here</a>
+                Don't have an account? <a href="/register">Register here</a>
             </div>
 
             <div class="auth-links" style="margin-top: 10px;">
-                <a href="/forgot-password.php" style="color: #999; font-size: 0.9em;">Forgot password?</a>
+                <a href="/forgot-password" style="color: #999; font-size: 0.9em;">Forgot password?</a>
             </div>
 
             <div class="auth-links" style="margin-top: 10px;">
@@ -119,7 +119,7 @@ if (redirect == null || redirect.isBlank()) {
             submitBtn.innerHTML = '<span class="spinner"></span>Logging in...';
 
             try {
-                const response = await fetch('/api/auth/login.php', {
+                const response = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

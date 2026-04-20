@@ -43,10 +43,9 @@ const API = {
             // Handle 401 Unauthorized
             if (response.status === 401) {
                 // If we are not on the login page, and it's not a login attempt
-                if (!window.location.pathname.includes('login.php') && !endpoint.includes('login.php')) {
+                if (!window.location.pathname.includes('/login') && !endpoint.includes('/login')) {
                     localStorage.removeItem('authToken');
-                    // Optional: Redirect to login?
-                    // window.location.href = '/login.php';
+                    // window.location.href = '/login';
                 }
             }
             
@@ -77,7 +76,7 @@ const API = {
      * Register new user
      */
     async register(username, email, password) {
-        return await this.request('/auth/register.php', {
+        return await this.request('/auth/register', {
             method: 'POST',
             body: JSON.stringify({ username, email, password })
         });
@@ -87,7 +86,7 @@ const API = {
      * Login user
      */
     async login(login, password) {
-        return await this.request('/auth/login.php', {
+        return await this.request('/auth/login', {
             method: 'POST',
             body: JSON.stringify({ login, password })
         });
@@ -98,7 +97,7 @@ const API = {
      */
     async logout() {
         localStorage.removeItem('authToken');
-        return await this.request('/auth/logout.php', {
+        return await this.request('/auth/logout', {
             method: 'POST'
         });
     },
@@ -107,7 +106,7 @@ const API = {
      * Check if user is logged in
      */
     async checkAuth() {
-        return await this.request('/auth/check.php');
+        return await this.request('/auth/check');
     },
     
     // =============
@@ -121,7 +120,7 @@ const API = {
         let query = `?page=${page}&limit=${limit}`;
         if (genre) query += `&genre=${encodeURIComponent(genre)}`;
         
-        return await this.request(`/songs/list.php${query}`);
+        return await this.request(`/songs/list${query}`);
     },
     
     /**
@@ -129,21 +128,21 @@ const API = {
      */
     async searchSongs(query, page = 1, limit = 20) {
         const params = `?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`;
-        return await this.request(`/songs/search.php${params}`);
+        return await this.request(`/songs/search${params}`);
     },
     
     /**
      * Get single song
      */
     async getSong(songId) {
-        return await this.request(`/songs/get.php?id=${songId}`);
+        return await this.request(`/songs/get?id=${songId}`);
     },
     
     /**
      * Update song (admin only)
      */
     async updateSong(songId, title, artist, album = '', genre = '', releaseYear = null) {
-        return await this.request('/songs/update.php', {
+        return await this.request('/songs/update', {
             method: 'PUT',
             body: JSON.stringify({ 
                 id: songId, 
@@ -160,7 +159,7 @@ const API = {
      * Delete song (admin only)
      */
     async deleteSong(songId) {
-        return await this.request('/songs/delete.php', {
+        return await this.request('/songs/delete', {
             method: 'DELETE',
             body: JSON.stringify({ id: songId })
         });
@@ -170,7 +169,7 @@ const API = {
      * Log song play
      */
     async logPlay(songId, durationPlayed = null) {
-        return await this.request('/songs/play.php', {
+        return await this.request('/songs/play', {
             method: 'POST',
             body: JSON.stringify({ song_id: songId, duration_played: durationPlayed })
         });
@@ -184,21 +183,21 @@ const API = {
      * Get user playlists
      */
     async getPlaylists() {
-        return await this.request('/playlists/list.php');
+        return await this.request('/playlists/list');
     },
     
     /**
      * Get playlist with songs
      */
     async getPlaylist(playlistId) {
-        return await this.request(`/playlists/get.php?id=${playlistId}`);
+        return await this.request(`/playlists/get?id=${playlistId}`);
     },
     
     /**
      * Create new playlist
      */
     async createPlaylist(name, description = '', isPublic = false) {
-        return await this.request('/playlists/create.php', {
+        return await this.request('/playlists/create', {
             method: 'POST',
             body: JSON.stringify({ name, description, is_public: isPublic })
         });
@@ -208,7 +207,7 @@ const API = {
      * Update playlist
      */
     async updatePlaylist(playlistId, name, description = '') {
-        return await this.request('/playlists/update.php', {
+        return await this.request('/playlists/update', {
             method: 'PUT',
             body: JSON.stringify({ id: playlistId, name, description })
         });
@@ -218,7 +217,7 @@ const API = {
      * Delete playlist
      */
     async deletePlaylist(playlistId) {
-        return await this.request('/playlists/delete.php', {
+        return await this.request('/playlists/delete', {
             method: 'DELETE',
             body: JSON.stringify({ id: playlistId })
         });
@@ -228,7 +227,7 @@ const API = {
      * Add song to playlist
      */
     async addSongToPlaylist(playlistId, songId) {
-        return await this.request('/playlists/add-song.php', {
+        return await this.request('/playlists/add-song', {
             method: 'POST',
             body: JSON.stringify({ playlist_id: playlistId, song_id: songId })
         });
@@ -238,7 +237,7 @@ const API = {
      * Remove song from playlist
      */
     async removeSongFromPlaylist(playlistId, songId) {
-        return await this.request('/playlists/remove-song.php', {
+        return await this.request('/playlists/remove-song', {
             method: 'DELETE',
             body: JSON.stringify({ playlist_id: playlistId, song_id: songId })
         });
@@ -252,14 +251,14 @@ const API = {
      * Get user favorites
      */
     async getFavorites() {
-        return await this.request('/favorites/list.php');
+        return await this.request('/favorites/list');
     },
     
     /**
      * Add song to favorites
      */
     async addFavorite(songId) {
-        return await this.request('/favorites/add.php', {
+        return await this.request('/favorites/add', {
             method: 'POST',
             body: JSON.stringify({ song_id: songId })
         });
@@ -269,7 +268,7 @@ const API = {
      * Remove song from favorites
      */
     async removeFavorite(songId) {
-        return await this.request('/favorites/remove.php', {
+        return await this.request('/favorites/remove', {
             method: 'DELETE',
             body: JSON.stringify({ song_id: songId })
         });
@@ -283,7 +282,7 @@ const API = {
      * Upload new song (admin only)
      */
     async uploadSong(formData) {
-        return await this.request('/admin/upload.php', {
+        return await this.request('/admin/upload', {
             method: 'POST',
             body: formData
         });
@@ -293,14 +292,14 @@ const API = {
      * Get all albums
      */
     async getAlbums() {
-        return await this.request('/albums/list.php');
+        return await this.request('/albums/list');
     },
 
     /**
      * Get songs for a specific album
      */
     async getAlbumSongs(albumName) {
-        return await this.request(`/albums/songs.php?name=${encodeURIComponent(albumName)}`);
+        return await this.request(`/albums/songs?name=${encodeURIComponent(albumName)}`);
     }
 };
 

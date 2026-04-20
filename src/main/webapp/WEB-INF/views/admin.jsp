@@ -60,8 +60,8 @@ User currentUser = (User) request.getAttribute("currentUser");
         <h2><i class="fas fa-shield-alt"></i> Admin Panel</h2>
         <div class="nav-right">
             <span><i class="fas fa-user"></i> <%= currentUser != null ? currentUser.username() : "admin" %></span>
-            <button onclick="window.location.href='/index.php'" class="nav-btn" title="Player"><i class="fas fa-music"></i></button>
-            <button onclick="window.location.href='/dashboard.php'" class="nav-btn" title="Dashboard"><i class="fas fa-chart-bar"></i></button>
+            <button onclick="window.location.href='/index'" class="nav-btn" title="Player"><i class="fas fa-music"></i></button>
+            <button onclick="window.location.href='/dashboard'" class="nav-btn" title="Dashboard"><i class="fas fa-chart-bar"></i></button>
             <button onclick="logout()" class="nav-btn" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
         </div>
     </div>
@@ -146,7 +146,7 @@ User currentUser = (User) request.getAttribute("currentUser");
         }
 
         async function loadStats() {
-            const response = await fetch('/api/admin/stats.php', {
+            const response = await fetch('/api/admin/stats', {
                 credentials: 'same-origin'
             });
             const data = await response.json();
@@ -218,7 +218,7 @@ User currentUser = (User) request.getAttribute("currentUser");
 
         async function logout() {
             await API.logout();
-            window.location.href = '/login.php';
+            window.location.href = '/login';
         }
 
         document.addEventListener('DOMContentLoaded', loadStats);

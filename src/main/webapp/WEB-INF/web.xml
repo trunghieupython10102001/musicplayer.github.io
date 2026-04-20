@@ -21,31 +21,31 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PageServlet</servlet-name>
-        <url-pattern>/index.php</url-pattern>
+        <url-pattern>/index</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PageServlet</servlet-name>
-        <url-pattern>/login.php</url-pattern>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PageServlet</servlet-name>
-        <url-pattern>/register.php</url-pattern>
+        <url-pattern>/register</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PageServlet</servlet-name>
-        <url-pattern>/dashboard.php</url-pattern>
+        <url-pattern>/dashboard</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PageServlet</servlet-name>
-        <url-pattern>/admin.php</url-pattern>
+        <url-pattern>/admin</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PageServlet</servlet-name>
-        <url-pattern>/forgot-password.php</url-pattern>
+        <url-pattern>/forgot-password</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PageServlet</servlet-name>
-        <url-pattern>/reset-password.php</url-pattern>
+        <url-pattern>/reset-password</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -54,7 +54,7 @@
     </servlet-mapping>
 
     <welcome-file-list>
-        <welcome-file>index.php</welcome-file>
+        <welcome-file>index</welcome-file>
     </welcome-file-list>
     <session-config>
         <session-timeout>1440</session-timeout>

@@ -17,30 +17,30 @@ public class PageServlet extends BaseServlet {
         try {
             Optional<User> currentUser = AuthService.currentUser(request);
             request.setAttribute("currentUser", currentUser.orElse(null));
-            if (("/".equals(path) || "/index.php".equals(path) || "/dashboard.php".equals(path) || "/admin.php".equals(path)) && currentUser.isEmpty()) {
-                response.sendRedirect("/login.php?redirect=" + path);
+            if (("/".equals(path) || "/index".equals(path) || "/dashboard".equals(path) || "/admin".equals(path)) && currentUser.isEmpty()) {
+                response.sendRedirect("/login?redirect=" + path);
                 return;
             }
-            if (("/login.php".equals(path) || "/register.php".equals(path) || "/forgot-password.php".equals(path) || "/reset-password.php".equals(path)) && currentUser.isPresent()) {
-                response.sendRedirect("/index.php");
+            if (("/login".equals(path) || "/register".equals(path) || "/forgot-password".equals(path) || "/reset-password".equals(path)) && currentUser.isPresent()) {
+                response.sendRedirect("/index");
                 return;
             }
-            if ("/reset-password.php".equals(path)) {
+            if ("/reset-password".equals(path)) {
                 String token = request.getParameter("token");
                 request.setAttribute("token", token == null ? "" : token);
             }
-            if ("/admin.php".equals(path) && (currentUser.isEmpty() || !"admin".equals(currentUser.get().role()))) {
-                response.sendRedirect("/index.php");
+            if ("/admin".equals(path) && (currentUser.isEmpty() || !"admin".equals(currentUser.get().role()))) {
+                response.sendRedirect("/index");
                 return;
             }
             String view = switch (path) {
-                case "/", "/index.php" -> "/WEB-INF/views/index.jsp";
-                case "/login.php" -> "/WEB-INF/views/login.jsp";
-                case "/register.php" -> "/WEB-INF/views/register.jsp";
-                case "/dashboard.php" -> "/WEB-INF/views/dashboard.jsp";
-                case "/admin.php" -> "/WEB-INF/views/admin.jsp";
-                case "/forgot-password.php" -> "/WEB-INF/views/forgot-password.jsp";
-                case "/reset-password.php" -> "/WEB-INF/views/reset-password.jsp";
+                case "/", "/index" -> "/WEB-INF/views/index.jsp";
+                case "/login" -> "/WEB-INF/views/login.jsp";
+                case "/register" -> "/WEB-INF/views/register.jsp";
+                case "/dashboard" -> "/WEB-INF/views/dashboard.jsp";
+                case "/admin" -> "/WEB-INF/views/admin.jsp";
+                case "/forgot-password" -> "/WEB-INF/views/forgot-password.jsp";
+                case "/reset-password" -> "/WEB-INF/views/reset-password.jsp";
                 default -> "/WEB-INF/views/index.jsp";
             };
             forward(request, response, view);

@@ -170,7 +170,7 @@ String avatar = username.isEmpty() ? "U" : username.substring(0, 1).toUpperCase(
 
             <% if ("admin".equals(role)) { %>
             <ul class="sidebar-nav" style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #282828;">
-                <li><button class="nav-item" onclick="window.location.href='/admin.php'"><i class="fas fa-cog"></i> Admin Panel</button></li>
+                <li><button class="nav-item" onclick="window.location.href='/admin'"><i class="fas fa-cog"></i> Admin Panel</button></li>
             </ul>
             <% } %>
         </aside>
@@ -328,7 +328,7 @@ String avatar = username.isEmpty() ? "U" : username.substring(0, 1).toUpperCase(
             if (window.API && typeof window.API.logout === 'function') {
                 await window.API.logout();
             }
-            window.location.href = '/login.php';
+            window.location.href = '/login';
         }
     </script>
     <script src="/assets/js/api.js?v=1"></script>

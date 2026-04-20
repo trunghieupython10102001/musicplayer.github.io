@@ -88,7 +88,7 @@
             </form>
 
             <div class="auth-links">
-                Already have an account? <a href="/login.php">Login here</a>
+                Already have an account? <a href="/login">Login here</a>
             </div>
         </div>
     </div>
@@ -197,7 +197,7 @@
             submitBtn.innerHTML = '<span class="spinner"></span>Creating account...';
 
             try {
-                const response = await fetch('/api/auth/register.php', {
+                const response = await fetch('/api/auth/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -210,7 +210,7 @@
                 if (data.success) {
                     showAlert('Account created successfully! Redirecting to login...', 'success');
                     setTimeout(() => {
-                        window.location.href = '/login.php';
+                        window.location.href = '/login';
                     }, 2000);
                 } else {
                     showAlert(data.message || 'Registration failed', 'error');

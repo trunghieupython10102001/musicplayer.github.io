@@ -26,7 +26,7 @@ A music streaming platform built with JSP/Servlets, MySQL, and vanilla JavaScrip
 - JSP / Jakarta Servlets on Tomcat 10
 - Maven WAR packaging
 - MySQL 8.0
-- REST-style API with legacy `.php` route compatibility
+- REST-style API with extensionless routes
 
 ### Infrastructure
 - Docker & Docker Compose
@@ -104,9 +104,9 @@ docker-compose logs -f
 ## Usage
 
 ### For Users
-1. Register a new account at `/register.php`
-2. Login at `/login.php`
-3. Forgot password? Use `/forgot-password.php` to reset
+1. Register a new account at `/register`
+2. Login at `/login`
+3. Forgot password? Use `/forgot-password` to reset
 4. Browse songs in the library
 5. Create playlists
 6. Add songs to favorites
@@ -114,39 +114,39 @@ docker-compose logs -f
 
 ### For Admins
 1. Login with admin credentials
-2. Access admin panel at `/admin.php`
+2. Access admin panel at `/admin`
 3. Upload new songs with metadata
 4. Manage existing songs
 
 ## API Endpoints
 
-The Java migration preserves the legacy `.php` route surface so the existing frontend JavaScript continues to work.
+The Java application now uses extensionless routes across pages and APIs.
 
 ### Authentication
-- `POST /api/auth/register.php` - Register new user
-- `POST /api/auth/login.php` - Login
-- `POST /api/auth/logout.php` - Logout
-- `GET /api/auth/check.php` - Check session
-- `POST /api/auth/forgot-password.php` - Request password reset
-- `POST /api/auth/reset-password.php` - Reset password with token
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login
+- `POST /api/auth/logout` - Logout
+- `GET /api/auth/check` - Check session
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password with token
 
 ### Songs
-- `GET /api/songs/list.php` - List all songs
-- `GET /api/songs/search.php?q=query` - Search songs
-- `GET /api/songs/get.php?id=1` - Get song details
-- `POST /api/songs/play.php` - Log play event
+- `GET /api/songs/list` - List all songs
+- `GET /api/songs/search?q=query` - Search songs
+- `GET /api/songs/get?id=1` - Get song details
+- `POST /api/songs/play` - Log play event
 
 ### Playlists
-- `GET /api/playlists/list.php` - Get user playlists
-- `POST /api/playlists/create.php` - Create playlist
-- `DELETE /api/playlists/delete.php` - Delete playlist
-- `POST /api/playlists/add-song.php` - Add song to playlist
-- `DELETE /api/playlists/remove-song.php` - Remove song
+- `GET /api/playlists/list` - Get user playlists
+- `POST /api/playlists/create` - Create playlist
+- `DELETE /api/playlists/delete` - Delete playlist
+- `POST /api/playlists/add-song` - Add song to playlist
+- `DELETE /api/playlists/remove-song` - Remove song
 
 ### Favorites
-- `GET /api/favorites/list.php` - Get favorites
-- `POST /api/favorites/add.php` - Add to favorites
-- `DELETE /api/favorites/remove.php` - Remove from favorites
+- `GET /api/favorites/list` - Get favorites
+- `POST /api/favorites/add` - Add to favorites
+- `DELETE /api/favorites/remove` - Remove from favorites
 
 ## Docker Commands
 

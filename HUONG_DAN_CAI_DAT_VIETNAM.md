@@ -84,10 +84,10 @@ Ban can thay cac service sau o trang thai `Up`:
 ## URL can nho
 
 - App: `http://localhost:8080`
-- Login: `http://localhost:8080/login.php`
-- Index: `http://localhost:8080/index.php`
-- Dashboard: `http://localhost:8080/dashboard.php`
-- Admin: `http://localhost:8080/admin.php`
+- Login: `http://localhost:8080/login`
+- Index: `http://localhost:8080/index`
+- Dashboard: `http://localhost:8080/dashboard`
+- Admin: `http://localhost:8080/admin`
 - phpMyAdmin: `http://localhost:8081`
 - MailHog: `http://localhost:8025`
 
@@ -113,9 +113,9 @@ Luu y quan trong:
 
 ### Test 1: dang nhap
 
-1. Mo `http://localhost:8080/login.php?demo=1`
+1. Mo `http://localhost:8080/login?demo=1`
 2. Dang nhap bang admin
-3. Ban phai vao duoc `index.php`
+3. Ban phai vao duoc `index`
 
 ### Test 2: phat nhac
 
@@ -131,7 +131,7 @@ Luu y quan trong:
 
 ### Test 4: admin upload
 
-1. Mo `http://localhost:8080/admin.php`
+1. Mo `http://localhost:8080/admin`
 2. Upload file mp3 va cover image
 3. Bai hat moi phai:
    - hien cover
@@ -198,8 +198,8 @@ docker compose up -d
 ### Tomcat
 
 - chay app Java/JSP
-- xu ly page routes nhu `login.php`, `index.php`, `admin.php`
-- xu ly API routes nhu `/api/auth/login.php`
+- xu ly page routes nhu `login`, `index`, `admin`
+- xu ly API routes nhu `/api/auth/login`
 
 ### Uploads
 
@@ -277,6 +277,6 @@ Mo `http://localhost:8081` va dang nhap:
 ## Ghi chu cuoi
 
 - He thong da duoc migrate khoi PHP sang `JSP/Servlet`
-- Cac route dang `.php` duoc giu lai de frontend cu van hoat dong
+- He thong hien tai dung route khong co duoi `.php`
 - Phan PHP cu da duoc xoa khoi repo
 - Trang thai hien tai phu hop de dev va test local bang Docker

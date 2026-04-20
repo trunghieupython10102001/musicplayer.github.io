@@ -42,8 +42,8 @@ Ban se thay cac service chinh dang chay:
 ## 4. Truy cap ung dung
 
 - Ung dung chinh: `http://localhost:8080`
-- Dang nhap: `http://localhost:8080/login.php`
-- Trang admin: `http://localhost:8080/admin.php`
+- Dang nhap: `http://localhost:8080/login`
+- Trang admin: `http://localhost:8080/admin`
 - phpMyAdmin: `http://localhost:8081`
 - MailHog: `http://localhost:8025`
 
@@ -58,11 +58,11 @@ Tai khoan admin:
 
 Sau khi dang nhap bang admin, ban co the test nhanh:
 
-1. Mo `http://localhost:8080/index.php`
+1. Mo `http://localhost:8080/index`
 2. Chon mot bai hat de phat nhac
 3. Thu tim kiem bai hat
 4. Them bai hat vao `Liked Songs`
-5. Mo `http://localhost:8080/admin.php`
+5. Mo `http://localhost:8080/admin`
 6. Upload mot bai hat moi
 7. Neu quen mat khau, thu `Forgot password` va xem email tai MailHog
 
@@ -120,4 +120,4 @@ docker compose up -d
 
 - Du an hien tai da bo hoan toan implementation PHP cu
 - Runtime hien tai la `Nginx + Tomcat + JSP/Servlet + MySQL`
-- Cac route dang `*.php` van duoc giu lai de frontend cu tiep tuc hoat dong
+- Route hien tai da bo duoi `.php`

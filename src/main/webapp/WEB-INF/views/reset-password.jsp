@@ -37,9 +37,9 @@ if (token == null) {
             </form>
             <% } else { %>
             <div class="alert alert-error show">Invalid or expired link. Please request a new one.</div>
-            <div class="auth-links"><a href="/forgot-password.php">Request New Reset Link</a></div>
+            <div class="auth-links"><a href="/forgot-password">Request New Reset Link</a></div>
             <% } %>
-            <div class="auth-links">Remember your password? <a href="/login.php">Login here</a></div>
+            <div class="auth-links">Remember your password? <a href="/login">Login here</a></div>
         </div>
     </div>
     <script>
@@ -61,7 +61,7 @@ if (token == null) {
                 const submitBtn = document.getElementById('submitBtn');
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Resetting...';
-                const response = await fetch('/api/auth/reset-password.php', {
+                const response = await fetch('/api/auth/reset-password', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token: document.getElementById('token').value, password })
@@ -69,7 +69,7 @@ if (token == null) {
                 const data = await response.json();
                 showAlert(data.message || 'Reset complete', data.success ? 'success' : 'error');
                 if (data.success) {
-                    setTimeout(() => window.location.href = '/login.php', 1500);
+                    setTimeout(() => window.location.href = '/login', 1500);
                 } else {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Reset Password';

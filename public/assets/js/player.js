@@ -41,7 +41,7 @@ async function init() {
     // Check authentication
     const authCheck = await API.checkAuth();
     if (!authCheck.success || !authCheck.data.logged_in) {
-        window.location.href = '/login.php';
+        window.location.href = '/login';
         return;
     }
 
@@ -884,7 +884,7 @@ async function createPlaylist() {
 async function logout() {
     if (confirm('Are you sure you want to logout?')) {
         await API.logout();
-        window.location.href = '/login.php';
+        window.location.href = '/login';
     }
 }
 

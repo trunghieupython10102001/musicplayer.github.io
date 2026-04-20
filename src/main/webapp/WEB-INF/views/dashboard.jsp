@@ -61,30 +61,30 @@ User currentUser = (User) request.getAttribute("currentUser");
             <h2><i class="fas fa-music"></i> Music Player</h2>
         </div>
         <div class="nav-center">
-            <div class="nav-item" onclick="window.location.href='/dashboard.php'">
+            <div class="nav-item" onclick="window.location.href='/dashboard'">
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </div>
-            <div class="nav-item" onclick="window.location.href='/index.php'">
+            <div class="nav-item" onclick="window.location.href='/index'">
                 <i class="fas fa-music"></i>
                 <span>Your Library</span>
             </div>
-            <div class="nav-item" onclick="window.location.href='/index.php'">
+            <div class="nav-item" onclick="window.location.href='/index'">
                 <i class="fas fa-heart"></i>
                 <span>Liked Songs</span>
             </div>
-            <div class="nav-item" onclick="window.location.href='/index.php'">
+            <div class="nav-item" onclick="window.location.href='/index'">
                 <i class="fas fa-compact-disc"></i>
                 <span>Albums</span>
             </div>
         </div>
         <div class="nav-right">
             <span class="user-name"><i class="fas fa-user"></i> <%= currentUser != null ? currentUser.username() : "" %></span>
-            <button onclick="window.location.href='/index.php'" class="nav-btn" title="Player">
+            <button onclick="window.location.href='/index'" class="nav-btn" title="Player">
                 <i class="fas fa-play"></i>
             </button>
             <% if (currentUser != null && "admin".equals(currentUser.role())) { %>
-            <button onclick="window.location.href='/admin.php'" class="nav-btn" title="Admin Panel">
+            <button onclick="window.location.href='/admin'" class="nav-btn" title="Admin Panel">
                 <i class="fas fa-cog"></i>
             </button>
             <% } %>
@@ -282,7 +282,7 @@ User currentUser = (User) request.getAttribute("currentUser");
         async function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 await API.logout();
-                window.location.href = '/login.php';
+                window.location.href = '/login';
             }
         }
 

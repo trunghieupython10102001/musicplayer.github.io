@@ -39,11 +39,11 @@
             </form>
 
             <div class="auth-links">
-                Remember your password? <a href="/login.php">Login here</a>
+                Remember your password? <a href="/login">Login here</a>
             </div>
 
             <div class="auth-links" style="margin-top: 10px;">
-                Don't have an account? <a href="/register.php">Register here</a>
+                Don't have an account? <a href="/register">Register here</a>
             </div>
         </div>
     </div>
@@ -74,7 +74,7 @@
             submitBtn.innerHTML = '<span class="spinner"></span>Sending...';
 
             try {
-                const response = await fetch('/api/auth/forgot-password.php', {
+                const response = await fetch('/api/auth/forgot-password', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -88,7 +88,7 @@
                     showAlert(data.message, 'success');
                     document.getElementById('forgotPasswordForm').reset();
                     setTimeout(() => {
-                        window.location.href = '/login.php';
+                        window.location.href = '/login';
                     }, 3000);
                 } else {
                     showAlert(data.message || 'Failed to send reset link', 'error');
