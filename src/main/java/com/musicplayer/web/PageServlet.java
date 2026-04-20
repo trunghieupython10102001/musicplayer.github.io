@@ -14,6 +14,14 @@ public class PageServlet extends BaseServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = request.getServletPath();
+        String canonicalPath = canonicalPagePath(path);
+
+        if (!path.equals(canonicalPath)) {
+            String queryString = request.getQueryString();
+            response.sendRedirect(canonicalPath + (queryString == null || queryString.isBlank() ? "" : "?" + queryString));
+            return;
+        }
+
         try {
             Optional<User> currentUser = AuthService.currentUser(request);
             request.setAttribute("currentUser", currentUser.orElse(null));
@@ -47,5 +55,18 @@ public class PageServlet extends BaseServlet {
         } catch (SQLException ex) {
             throw new ServletException(ex);
         }
+    }
+
+    private String canonicalPagePath(String path) {
+        return switch (path) {
+            case "/index.php" -> "/index";
+            case "/login.php" -> "/login";
+            case "/register.php" -> "/register";
+            case "/dashboard.php" -> "/dashboard";
+            case "/admin.php" -> "/admin";
+            case "/forgot-password.php" -> "/forgot-password";
+            case "/reset-password.php" -> "/reset-password";
+            default -> path;
+        };
     }
 }

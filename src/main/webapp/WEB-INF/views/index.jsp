@@ -331,7 +331,7 @@ String avatar = username.isEmpty() ? "U" : username.substring(0, 1).toUpperCase(
             window.location.href = '/login';
         }
     </script>
-    <script src="/assets/js/api.js?v=1"></script>
-    <script src="/assets/js/player.js?v=1"></script>
+    <script src="/assets/js/api.js?v=3"></script>
+    <script src="/assets/js/player.js?v=3"></script>
 </body>
 </html>

@@ -136,7 +136,7 @@ User currentUser = (User) request.getAttribute("currentUser");
         </div>
     </div>
 
-    <script src="/assets/js/api.js?v=2"></script>
+    <script src="/assets/js/api.js?v=3"></script>
     <script>
         function showAlert(message, type = 'success') {
             const alert = document.getElementById('alert');

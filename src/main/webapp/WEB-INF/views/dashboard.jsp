@@ -144,7 +144,7 @@ User currentUser = (User) request.getAttribute("currentUser");
         </div>
     </div>
 
-    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/api.js?v=3"></script>
     <script>
         let playlists = [];
         let favorites = [];

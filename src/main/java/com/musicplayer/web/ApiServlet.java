@@ -70,6 +70,7 @@ public class ApiServlet extends BaseServlet {
 
     private void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String path = Optional.ofNullable(request.getPathInfo()).orElse("");
+        path = canonicalApiPath(path);
         try {
             switch (path) {
                 case "/auth/login" -> login(request, response);
@@ -105,6 +106,13 @@ public class ApiServlet extends BaseServlet {
         } catch (SQLException ex) {
             throw new ServletException(ex);
         }
+    }
+
+    private String canonicalApiPath(String path) {
+        if (path.endsWith(".php")) {
+            return path.substring(0, path.length() - 4);
+        }
+        return path;
     }
 
     private Optional<User> requireUser(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
