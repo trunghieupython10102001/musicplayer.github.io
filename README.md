@@ -60,6 +60,7 @@ musicplayer/
 
 - Huong dan nhanh: `HUONG_DAN_NHANH_VIETNAM.md`
 - Huong dan cai dat chi tiet: `HUONG_DAN_CAI_DAT_VIETNAM.md`
+- Huong dan fix upload tren Windows: `HUONG_DAN_FIX_UPLOAD_WINDOWS.md`
 
 ### Prerequisites
 - Docker Desktop installed
