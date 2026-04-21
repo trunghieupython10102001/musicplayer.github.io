@@ -100,6 +100,7 @@ public class ApiServlet extends BaseServlet {
                 case "/stats/most-played" -> mostPlayed(request, response);
                 case "/stats/most-liked" -> mostLiked(request, response);
                 case "/admin/stats" -> adminStats(request, response);
+                case "/admin/activity" -> adminActivity(request, response);
                 case "/admin/upload" -> uploadSong(request, response);
                 default -> error(response, 404, "Endpoint not found");
             }
@@ -784,6 +785,44 @@ public class ApiServlet extends BaseServlet {
             stats.put("recent_users", scalar(connection, "SELECT COUNT(*) FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"));
         }
         ok(response, "Admin statistics retrieved successfully", stats);
+    }
+
+    private void adminActivity(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
+        if (!requireAdmin(request, response)) {
+            return;
+        }
+
+        int limit = Math.max(1, Math.min(20, RequestUtil.intValue(Optional.ofNullable(request.getParameter("limit")).orElse("10"))));
+        List<Map<String, Object>> activity = new ArrayList<>();
+
+        try (Connection connection = Database.getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                 "SELECT activity_type, title, subtitle, activity_at FROM ("
+                     + " SELECT 'song_upload' AS activity_type, s.title AS title, CONCAT('Uploaded by admin • ', s.artist) AS subtitle, s.created_at AS activity_at FROM songs s"
+                     + " UNION ALL"
+                     + " SELECT 'user_register' AS activity_type, u.username AS title, CONCAT('New user • ', u.email) AS subtitle, u.created_at AS activity_at FROM users u"
+                     + " UNION ALL"
+                     + " SELECT 'song_play' AS activity_type, s.title AS title, CONCAT('Played by ', u.username) AS subtitle, ph.played_at AS activity_at FROM play_history ph JOIN songs s ON s.id = ph.song_id JOIN users u ON u.id = ph.user_id"
+                     + " UNION ALL"
+                     + " SELECT 'favorite_add' AS activity_type, s.title AS title, CONCAT('Favorited by ', u.username) AS subtitle, f.added_at AS activity_at FROM favorites f JOIN songs s ON s.id = f.song_id JOIN users u ON u.id = f.user_id"
+                     + ") activity_feed ORDER BY activity_at DESC LIMIT ?"
+             )) {
+            statement.setInt(1, limit);
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("type", rs.getString("activity_type"));
+                    item.put("title", rs.getString("title"));
+                    item.put("subtitle", rs.getString("subtitle"));
+                    Timestamp activityAt = rs.getTimestamp("activity_at");
+                    item.put("activity_at", activityAt);
+                    item.put("time_ago", AppUtil.timeAgo(activityAt));
+                    activity.add(item);
+                }
+            }
+        }
+
+        ok(response, "Admin activity retrieved successfully", Map.of("items", activity));
     }
 
     private void uploadSong(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {

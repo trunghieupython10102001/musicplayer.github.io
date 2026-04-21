@@ -288,6 +288,22 @@ const API = {
         });
     },
 
+    async getAdminStats() {
+        return await this.request('/admin/stats');
+    },
+
+    async getRecentActivity(limit = 10) {
+        return await this.request(`/admin/activity?limit=${limit}`);
+    },
+
+    async getMostPlayed(limit = 5) {
+        return await this.request(`/stats/most-played?limit=${limit}`);
+    },
+
+    async getMostLiked(limit = 5) {
+        return await this.request(`/stats/most-liked?limit=${limit}`);
+    },
+
     /**
      * Get all albums
      */
